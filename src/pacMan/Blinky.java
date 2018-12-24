@@ -1,5 +1,5 @@
 package pacMan;
-
+ 
 import java.awt.Toolkit;
 
 public class Blinky extends Ghost {
