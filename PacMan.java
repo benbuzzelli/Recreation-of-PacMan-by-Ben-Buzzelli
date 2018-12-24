@@ -142,8 +142,10 @@ public class PacMan {
 	public void updatePacMan(int deltaX, int deltaY, PacManBoard.Tyle[][] tyle_board) {
 		int[] delta = new int[2];
 		delta = getMove(deltaX, deltaY, tyle_board);
-		updateDeltaX(delta[0]);
-		updateDeltaY(delta[1]);
+		curDeltaX = delta[0];
+		curDeltaY = delta[1];
+		//updateDeltaX(delta[0]);
+		//updateDeltaY(delta[1]);
 		updateX(curDeltaX);
 		updateY(curDeltaY);
 	}
@@ -197,11 +199,11 @@ public class PacMan {
 	}
 
 	public void updateDeltaX(int deltaX) {
-		this.curDeltaX = deltaX;
+		curDeltaX = deltaX;
 	}
 
 	public void updateDeltaY(int deltaY) {
-		this.curDeltaY = deltaY;
+		curDeltaY = deltaY;
 	}
 
 	public void updateX(int deltaX) {
@@ -268,6 +270,8 @@ public class PacMan {
 		else if (!getIfValid(curDeltaX, curDeltaY, tyle_board)) {
 			updateSpeed(0);
 		}
+		updateX(curDeltaX);
+		updateY(curDeltaY);
 	}
 	
 	public boolean getIfValid(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
