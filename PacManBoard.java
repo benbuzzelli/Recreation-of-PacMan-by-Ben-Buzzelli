@@ -88,10 +88,15 @@ public class PacManBoard extends JPanel implements KeyListener {
 	private boolean isPowered;
 
 	private PacMan pacman = new PacMan(240, 384);
-	private Ghost clyde = new Clyde(280, 232);
-	private Ghost inky = new Inky(216, 232);
-	private Ghost blinky = new Blinky(248, 192);
-	private Ghost pinky = new Pinky(248, 248);
+	private Ghost[] ghosts = {new Clyde(280,232),
+							  new Inky(216, 232),
+							  new Blinky(248, 192),
+							  new Pinky(248, 248)
+							 };
+	private Ghost clyde = ghosts[0];
+	private Ghost inky = ghosts[1];
+	private Ghost blinky = ghosts[2];
+	private Ghost pinky = ghosts[3];
 
 	private ScoreBoard scoreboard = new ScoreBoard();
 	private JFrame frame = new JFrame();
@@ -118,11 +123,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		drawGameBoard(g);
 
 		drawPacMan(g);
-		drawClyde(g);
-		drawInky(g);
-		drawPinky(g);
-		drawBlinky(g);
-
+		drawGhosts(g);
 		drawGameBorder(g);
 	}
 
@@ -161,7 +162,20 @@ public class PacManBoard extends JPanel implements KeyListener {
 		g.drawImage(pacman.getImage(), pacman.getX() + xplus, pacman.getY() + yplus, width / 2, height / 2, this);
 		g.drawImage(clyde.getImage(), clyde.getX() + xplus, clyde.getY() + yplus, width / 2, height / 2, this);
 	}
+	
+	private void drawGhosts(Graphics g){
+		for(int i =0;i<ghosts.length;i++){
+			Ghost ghost = ghosts[i];
+			int width = ghost.getImage().getWidth(this);
+			int height = ghost.getImage().getHeight(this);
+			int xplus = -(width / 2 - dimension) / 2;
+			int yplus = -(height / 2 - dimension) / 2;
 
+			g.drawImage(ghost.getImage(), ghost.getX() + xplus, ghost.getY() + yplus, width / 2, height / 2, this);
+		}
+	}
+
+	/*
 	private void drawClyde(Graphics g) {
 		int width = clyde.getImage().getWidth(this);
 		int height = clyde.getImage().getHeight(this);
@@ -197,6 +211,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 
 		g.drawImage(blinky.getImage(), blinky.getX() + xplus, blinky.getY() + yplus, width / 2, height / 2, this);
 	}
+	*/
 
 	private void setFrame(JFrame frame) {
 		frame.setSize(512, 576);
