@@ -293,7 +293,8 @@ public class PacManBoard extends JPanel implements KeyListener {
 			if (pacman.getStartCount() != -1)
 				pacman.pacmanStart();
 			else {
-				pacman.updatePacMan(delta[0], delta[1], tyle_board);
+				pacman.update(delta[0], delta[1], tyle_board);
+				// pacman.updatePacMan(delta[0], delta[1], tyle_board);
 				pacman.updateImage();
 			}
 
