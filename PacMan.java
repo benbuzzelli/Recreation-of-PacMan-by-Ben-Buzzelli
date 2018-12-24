@@ -36,7 +36,8 @@ public class PacMan {
 	private final int dimension = 16;
 	private int curDeltaX = 0;
 	private int curDeltaY = 0;
-	private double speed = 2;
+	private int speed = 2;
+	private int curSpeed = 0;
 	private int start_count = 0;
 	public int frame = 0;
 	
@@ -56,7 +57,7 @@ public class PacMan {
 		else {
 			curDeltaX = -1;
 			curDeltaY = 0;
-			speed = 2;
+			curSpeed = 2;
 			start_count = -1;
 		}
 	}
@@ -108,7 +109,7 @@ public class PacMan {
 	}
 	
 	public void updateImage() {
-		if (image_frame == 10)
+		if (image_frame == 12)
 			image_frame = 0;
 		
 		rotateCharacter();
@@ -121,15 +122,19 @@ public class PacMan {
 		int[][] delta = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } };
 
 		for (int i = 1; i < 5; i++) {
-			if (getDeltaX() == delta[i-1][0] && getDeltaY() == delta[i-1][1]) {
+			if (curDeltaX == delta[i-1][0] && curDeltaY == delta[i-1][1]) {
 				String filename = new String();
-				if (speed != 0)
-					filename = name.filename_prefix + filename_appendix[i][image_frame / 5];
+				if (curSpeed != 0) {
+					if (image_frame / 4 == 2)
+						filename = name.filename_prefix + filename_appendix[0][0];
+					else
+						filename = name.filename_prefix + filename_appendix[i][image_frame / 4];
+				}
 				else
 					filename = name.filename_prefix + filename_appendix[i][0];
 				character = Toolkit.getDefaultToolkit().getImage(filename);
 			}
-			else
+			else if (curSpeed == 0 && curDeltaX == 0 && curDeltaY == 0)
 				character = Toolkit.getDefaultToolkit().getImage(name.filename_prefix + filename_appendix[0][0]);
 		}
 	}
@@ -137,12 +142,10 @@ public class PacMan {
 	public void updatePacMan(int deltaX, int deltaY, PacManBoard.Tyle[][] tyle_board) {
 		int[] delta = new int[2];
 		delta = getMove(deltaX, deltaY, tyle_board);
-		System.out.println("dx = " + delta[0] + " dy = " + delta[1]);
 		updateDeltaX(delta[0]);
 		updateDeltaY(delta[1]);
 		updateX(curDeltaX);
 		updateY(curDeltaY);
-		System.out.println("x = " + x + " y = " + y + " SPEED: " + speed);
 	}
 
 	public int[] getMove(int deltaX, int deltaY, PacManBoard.Tyle[][] tyle_board) {
@@ -202,11 +205,11 @@ public class PacMan {
 	}
 
 	public void updateX(int deltaX) {
-		x += curDeltaX * speed;
+		x += curDeltaX * curSpeed;
 	}
 
 	public void updateY(int deltaY) {
-		y += curDeltaY * speed;
+		y += curDeltaY * curSpeed;
 	}
 
 	public void resetX(int x) {
@@ -217,8 +220,8 @@ public class PacMan {
 		this.y = y;
 	}
 
-	public void updateSpeed(double speed) {
-		this.speed = speed;
+	public void updateSpeed(int speed) {
+		curSpeed = speed;
 	}
 
 	public int getDeltaX() {
@@ -238,7 +241,7 @@ public class PacMan {
 	}
 
 	public double getSpeed() {
-		return speed;
+		return curSpeed;
 	}
 
 	public Image getImage() {
@@ -257,8 +260,14 @@ public class PacMan {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	public void update(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
-		getIfValid(dx, dy, tyle_board);
-		
+		if (getIfValid(dx, dy, tyle_board)) {
+			curDeltaX = dx;
+			curDeltaY = dy;
+			updateSpeed(speed);
+		}
+		else if (!getIfValid(curDeltaX, curDeltaY, tyle_board)) {
+			updateSpeed(0);
+		}
 	}
 	
 	public boolean getIfValid(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
