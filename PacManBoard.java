@@ -1,5 +1,5 @@
 package pacMan;
-  
+
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -175,43 +175,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		}
 	}
 
-	/*
-	private void drawClyde(Graphics g) {
-		int width = clyde.getImage().getWidth(this);
-		int height = clyde.getImage().getHeight(this);
-		int xplus = -(width / 2 - dimension) / 2;
-		int yplus = -(height / 2 - dimension) / 2;
 
-		g.drawImage(clyde.getImage(), clyde.getX() + xplus, clyde.getY() + yplus, width / 2, height / 2, this);
-	}
-
-	private void drawInky(Graphics g) {
-		int width = inky.getImage().getWidth(this);
-		int height = inky.getImage().getHeight(this);
-		int xplus = -(width / 2 - dimension) / 2;
-		int yplus = -(height / 2 - dimension) / 2;
-
-		g.drawImage(inky.getImage(), inky.getX() + xplus, inky.getY() + yplus, width / 2, height / 2, this);
-	}
-
-	private void drawPinky(Graphics g) {
-		int width = pinky.getImage().getWidth(this);
-		int height = pinky.getImage().getHeight(this);
-		int xplus = -(width / 2 - dimension) / 2;
-		int yplus = -(height / 2 - dimension) / 2;
-
-		g.drawImage(pinky.getImage(), pinky.getX() + xplus, pinky.getY() + yplus, width / 2, height / 2, this);
-	}
-
-	private void drawBlinky(Graphics g) {
-		int width = blinky.getImage().getWidth(this);
-		int height = blinky.getImage().getHeight(this);
-		int xplus = -(width / 2 - dimension) / 2;
-		int yplus = -(height / 2 - dimension) / 2;
-
-		g.drawImage(blinky.getImage(), blinky.getX() + xplus, blinky.getY() + yplus, width / 2, height / 2, this);
-	}
-	*/
 
 	private void setFrame(JFrame frame) {
 		frame.setSize(512, 576);
@@ -305,11 +269,12 @@ public class PacManBoard extends JPanel implements KeyListener {
 
 		while (true) {
 			
-			if (pacman.getStartCount() != -1)
+			if (pacman.getStartCount() != -1){
 				pacman.pacmanStart();
+				delta[0] = -1;
+			}
 			else {
-				//pacman.update(delta[0], delta[1], tyle_board);
-				pacman.updatePacMan(delta[0], delta[1], tyle_board);
+				pacman.update(delta[0], delta[1], tyle_board);
 				pacman.updateImage();
 			}
 
