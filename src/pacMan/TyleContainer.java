@@ -28,7 +28,7 @@ public class TyleContainer {
 		OUTSIDE_CONCAVE_WALL_RIGHT_BOTTOM_RIGHT("images/ocw_r_br.png", 'p', TyleType.WALL),
 		OUTSIDE_CONCAVE_WALL_RIGHT_TOP_RIGHT("images/ocw_r_tr.png", 'q', TyleType.WALL),
 
-		GHOST_WALL_RIGHT("images/w_r.png", 'r', TyleType.WALL), GHOST_WALL_TOP_RIGHT("images/gw_tr.png", 's', TyleType.WALL),
+		GHOST_WALL_RIGHT("images/gw_r.png", 'r', TyleType.WALL), GHOST_WALL_TOP_RIGHT("images/gw_tr.png", 's', TyleType.WALL),
 		GHOST_WALL_TOP("images/gw_t.png", 't', TyleType.WALL), GHOST_WALL_TOP_LEFT("images/gw_tl.png", 'u', TyleType.WALL),
 		GHOST_WALL_LEFT("images/gw_l.png", 'v', TyleType.WALL), GHOST_WALL_BOTTOM_LEFT("images/gw_bl.png", 'w', TyleType.WALL),
 		GHOST_WALL_BOTTOM("images/gw_b.png", 'x', TyleType.WALL), GHOST_WALL_BOTTOM_RIGHT("images/gw_br.png", 'y', TyleType.WALL),
