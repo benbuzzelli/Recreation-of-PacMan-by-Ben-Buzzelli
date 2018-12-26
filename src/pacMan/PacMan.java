@@ -52,7 +52,7 @@ public class PacMan {
 	}
 	
 	public void pacmanStart() {
-		if (start_count < 180) {
+		if (start_count < 30) {
 			curDeltaX = 0;
 			curDeltaY = 0;
 			curSpeed = 0;
