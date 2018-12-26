@@ -63,6 +63,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		BLACK_SQUARE("black_square.png", '+', TyleType.EMPTY),
 		TELEPORT_SQUARE_A("teleport_square.png", 'A', TyleType.TELEPORT),
 		TELEPORT_SQUARE_B("teleport_square.png", 'B', TyleType.TELEPORT),
+		TELEPORT_PATH("teleport_square.png", '?', TyleType.TELEPORT),
 		BLACK_GHOST_SQUARE("black_ghost_square.png", '_', TyleType.GHOSTSPACE),
 		DOWN_ONLY_SQUARE("black_square.png", '^', TyleType.EMPTY), DOT_SQUARE("dot_square.png", 'o', TyleType.DOT),
 		POWERUP_USED("black_square.png", '$', TyleType.EMPTY), POWERUP("powerup.png", '@', TyleType.POWERUP),
@@ -81,23 +82,11 @@ public class PacManBoard extends JPanel implements KeyListener {
 	}
 
 	public static Scanner in = new Scanner(System.in);
-
-	private final int dimension = 16;
-
-	private int curFrame = -1;
-	private boolean isPowered;
+	public static final int dimension = 16;
 
 	private PacMan pacman = new PacMan(240, 384);
-	private Ghost[] ghosts = {new Clyde(280,232),
-							  new Inky(216, 232),
-							  new Blinky(248, 192),
-							  new Pinky(248, 248)
-							 };
-	private Ghost clyde = ghosts[0];
-	private Ghost inky = ghosts[1];
-	private Ghost blinky = ghosts[2];
-	private Ghost pinky = ghosts[3];
-
+	private Ghost[] ghosts = new Ghost[4];
+	
 	private ScoreBoard scoreboard = new ScoreBoard();
 	private JFrame frame = new JFrame();
 	private final ArrayList<String> board = new ArrayList<>();
@@ -105,7 +94,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 
 	private List<int[]> powerup_pos = new ArrayList<int[]>();
 
-	private int[] delta = new int[2];
+	private int[] delta = {-1, 0};
 
 	public void getBoard(String file_name) throws FileNotFoundException {
 		File file = new File(file_name);
@@ -160,11 +149,10 @@ public class PacManBoard extends JPanel implements KeyListener {
 		int yplus = -(height / 2 - dimension) / 2;
 
 		g.drawImage(pacman.getImage(), pacman.getX() + xplus, pacman.getY() + yplus, width / 2, height / 2, this);
-		g.drawImage(clyde.getImage(), clyde.getX() + xplus, clyde.getY() + yplus, width / 2, height / 2, this);
 	}
-	
-	private void drawGhosts(Graphics g){
-		for(int i =0;i<ghosts.length;i++){
+
+	private void drawGhosts(Graphics g) {
+		for (int i = 0; i < ghosts.length; i++) {
 			Ghost ghost = ghosts[i];
 			int width = ghost.getImage().getWidth(this);
 			int height = ghost.getImage().getHeight(this);
@@ -174,8 +162,6 @@ public class PacManBoard extends JPanel implements KeyListener {
 			g.drawImage(ghost.getImage(), ghost.getX() + xplus, ghost.getY() + yplus, width / 2, height / 2, this);
 		}
 	}
-
-
 
 	private void setFrame(JFrame frame) {
 		frame.setSize(512, 576);
@@ -235,109 +221,49 @@ public class PacManBoard extends JPanel implements KeyListener {
 		}
 	}
 
-	public void blinkPowerUps() {
-		if (curFrame % 200 == 0) {
-			for (int i = 0; i < powerup_pos.size(); i++) {
-				if (tyle_board[powerup_pos.get(i)[0]][powerup_pos.get(i)[1]] == Tyle.POWERUP) {
-					tyle_board[powerup_pos.get(i)[0]][powerup_pos.get(i)[1]] = Tyle.POWERUP_BLINKED;
-				} else if (tyle_board[powerup_pos.get(i)[0]][powerup_pos.get(i)[1]] == Tyle.POWERUP_BLINKED) {
-					tyle_board[powerup_pos.get(i)[0]][powerup_pos.get(i)[1]] = Tyle.POWERUP;
-				}
-			}
-		}
-	}
-
 	public void createBoard() throws FileNotFoundException {
 		getBoard("textBoard.txt");
+	}
+	
+	private void setGhosts(PacManBoard.Tyle[][] tyleBoard) {
+		ghosts[0] = new Clyde(280, 232, tyleBoard);
+		ghosts[1] = new Inky(216, 232, tyleBoard);
+		ghosts[2] = new Blinky(248, 192, tyleBoard);
+		ghosts[3] = new Pinky(248, 248, tyleBoard);
 	}
 
 	public void startGame() throws FileNotFoundException {
 		createBoard();
 		setTyleBoard(board.size(), board.get(0).length());
 		getPowerUpLocations(board.size(), board.get(0).length());
+		setGhosts(tyle_board);
 		setFrame(frame);
+		
+		CharacterEventHandler characterHandler = new CharacterEventHandler(60, pacman, ghosts, tyle_board);
 
-		clyde.setImage();
-		inky.setImage();
-		pinky.setImage();
-		blinky.setImage();
-		clyde.updateImage();
-		inky.updateImage();
-		pinky.updateImage();
-		blinky.updateImage();
-		pacman.updateImage();
+		characterHandler.setCharacters();
+		
+		characterHandler.handleStart();
 
 		while (true) {
-			
-			if (pacman.getStartCount() != -1){
-				pacman.pacmanStart();
-				delta[0] = -1;
-			}
-			else {
-				pacman.update(delta[0], delta[1], tyle_board);
-				pacman.updateImage();
-			}
 
-			if (pacman.getDeltaX() != 0 || pacman.getDeltaY() != 0) {
-				if (clyde.getStartCount() != -1) {
-					clyde.ghostStart();
-					clyde.updateImage();
-				}
-				if (inky.getStartCount() != -1) {
-					inky.ghostStart();
-					inky.updateImage();
-				}
-				if (pinky.getStartCount() != -1) {
-					pinky.ghostStart();
-					pinky.updateImage();
-				}
-				if (blinky.getStartCount() != -1) {
-					blinky.ghostStart();
-					blinky.updateImage();
-				}
-				curFrame++;
-				if (curFrame == 20)
-					curFrame = 0;
-				blinkPowerUps();
-
-				if (clyde.getStartCount() == -1) {
-					clyde.updateMove(pacman, tyle_board);
-					clyde.updateImage();
-				}
-				if (inky.getStartCount() == -1) {
-					inky.updateMove(pacman, tyle_board);
-					inky.updateImage();
-				}
-				if (pinky.getStartCount() == -1) {
-					pinky.updateMove(pacman, tyle_board);
-					pinky.updateImage();
-				}
-				if (blinky.getStartCount() == -1) {
-					blinky.updateMove(pacman, tyle_board);
-					blinky.updateImage();
-				}
-			}
-
-			pacman.updateBlueState(isPowered, tyle_board);
-			clyde.checkCollision(pacman);
-			inky.checkCollision(pacman);
-			pinky.checkCollision(pacman);
-			blinky.checkCollision(pacman);
-			pacman.updateDots(tyle_board);
+			characterHandler.postKeyPressEventHandler(delta);
 
 			frame.repaint();
-			pacman.frame++;
-			if (pacman.frame == 30)
-				pacman.frame = 0;
-			try {
-				Thread.sleep(16, 666);
-				// Thread.sleep(100, 666);
-			} catch (InterruptedException e) {
-
-			}
+			
+			sleep();
 
 		}
 
+	}
+	
+	public static void sleep() {
+		try {
+			Thread.sleep(16, 666);
+			// Thread.sleep(100, 666);
+		} catch (InterruptedException e) {
+
+		}
 	}
 
 	public void keyTyped(KeyEvent event) {
@@ -347,7 +273,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	public void keyPressed(KeyEvent event) {
 		delta[0] = 0;
 		delta[1] = 0;
-		
+
 		if (event.getKeyCode() == KeyEvent.VK_UP) {
 			delta[0] = 0;
 			delta[1] = -1;

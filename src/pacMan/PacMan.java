@@ -2,10 +2,7 @@ package pacMan;
 
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.List;
 
-import pacMan.Ghost.State;
 import pacMan.PacManBoard.Tyle;
 import pacMan.PacManBoard.TyleType;
 
@@ -23,6 +20,7 @@ public class PacMan {
 	}
 
 	public Name name = Name.PACMAN;
+	public State state = State.DEFAULT;
 
 	public static String[][] filename_appendix = { { "_closed.png" }, { "_up.png", "_up1.png", },
 			{ "_down.png", "_down1.png", }, { "_left.png", "_left1.png", }, { "_right.png", "_right1.png", } };
@@ -30,7 +28,6 @@ public class PacMan {
 	public int image_frame = 0;
 
 	public boolean isBlueGhost;
-	public int blueFrame = 0;
 	private int y;
 	private int x;
 	private final int dimension = 16;
@@ -39,7 +36,7 @@ public class PacMan {
 	private int speed = 2;
 	private int curSpeed = 0;
 	private int start_count = 0;
-	public int frame = 0;
+	private int speed_percent = 80;
 	
 	public PacMan(int x, int y) {
 		this.x = x;
@@ -47,13 +44,19 @@ public class PacMan {
 	}
 
 	public void resetPacMan() {
+		start_count = 0;
+		speed_percent = 80;
 		resetX(240);
 		resetY(384);
 	}
 	
 	public void pacmanStart() {
-		if (start_count < 180)
+		if (start_count < 180) {
+			curDeltaX = 0;
+			curDeltaY = 0;
+			curSpeed = 0;
 			start_count++;
+		}
 		else {
 			curDeltaX = -1;
 			curDeltaY = 0;
@@ -61,26 +64,18 @@ public class PacMan {
 			start_count = -1;
 		}
 	}
-
-	public void updateDots(PacManBoard.Tyle[][] tyle_board) {
-		if (name == Name.PACMAN && tyle_board[y / dimension][x / dimension].type == TyleType.DOT)
-			tyle_board[y / dimension][x / dimension] = Tyle.BLACK_SQUARE;
+	
+	public void setSpeed(PacManBoard.Tyle[][] tyle_board) {
+		if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension] == Tyle.DOT_SQUARE)
+			speed_percent = 70;
+		else
+			speed_percent = 80;
 	}
 
-	public boolean updateBlueState(boolean isBlue, PacManBoard.Tyle[][] tyle_board) {
-		if (isBlue) {
-			if (name != Name.PACMAN) {
-				isBlueGhost = true;
-			}
-		} else
-			isBlueGhost = false;
-		if (name == Name.PACMAN && tyle_board[y / dimension][x / dimension].type == TyleType.POWERUP) {
-			tyle_board[y / dimension][x / dimension] = Tyle.POWERUP_USED;
-			isBlueGhost = true;
-			isBlue = true;
+	public void updateDots(PacManBoard.Tyle[][] tyle_board) {
+		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT) {
+			tyle_board[y / dimension][x / dimension] = Tyle.BLACK_SQUARE;
 		}
-
-		return isBlue;
 	}
 
 	public void teleport(PacManBoard.Tyle type, PacManBoard.Tyle[][] tyle_board) {
@@ -139,63 +134,45 @@ public class PacMan {
 		}
 	}
 
-	public void updatePacMan(int deltaX, int deltaY, PacManBoard.Tyle[][] tyle_board) {
-		int[] delta = new int[2];
-		delta = getMove(deltaX, deltaY, tyle_board);
-		curDeltaX = delta[0];
-		curDeltaY = delta[1];
-		//updateDeltaX(delta[0]);
-		//updateDeltaY(delta[1]);
+	public void update(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
+		if (x % dimension == 0 && y % dimension == 0) {
+			if (getIfValid(dx, dy, tyle_board)) {
+				curDeltaX = dx;
+				curDeltaY = dy;
+				updateSpeed(speed);
+			}
+			else if (!getIfValid(curDeltaX, curDeltaY, tyle_board)) {
+				updateSpeed(0);
+			}
+		}
 		updateX(curDeltaX);
 		updateY(curDeltaY);
 	}
+	
+	public boolean getIfValid(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
+		if (tyle_board[getY() / getDimension()][getX() / getDimension()].type == TyleType.TELEPORT) {
+			teleport(tyle_board[getY() / getDimension()][getX() / getDimension()], tyle_board);
+		}
 
-	public int[] getMove(int deltaX, int deltaY, PacManBoard.Tyle[][] tyle_board) {
-		int[] delta = new int[2];
-		PacManBoard.Tyle typeCurrent = getNextTyle(getDeltaX(), getDeltaY(), tyle_board);
+		if (isValid(dx, dy, tyle_board)) {
+			return true;
+		}
 		
-		PacManBoard.Tyle type = getNextTyle(deltaX, deltaY, tyle_board);
-		if (type != null && type.type != PacManBoard.TyleType.WALL && type.type != PacManBoard.TyleType.GHOSTGATE
-				&& type.type != PacManBoard.TyleType.UNREACHABLE) {
-			teleport(type, tyle_board);
-			delta[0] = deltaX;
-			delta[1] = deltaY;
-			updateSpeed(speed);
-			return delta;
-		}
-		if (typeCurrent != null && typeCurrent.type != PacManBoard.TyleType.WALL
-				&& typeCurrent.type != PacManBoard.TyleType.GHOSTGATE
-				&& typeCurrent.type != PacManBoard.TyleType.UNREACHABLE) {
-			teleport(typeCurrent, tyle_board);
-			delta[0] = getDeltaX();
-			delta[1] = getDeltaY();
-			updateSpeed(speed);
-			return delta;
-		}
-		delta[0] = getDeltaX();
-		delta[1] = getDeltaY();
-		updateSpeed(0);
-		return delta;
+		return false;
 	}
-
-	public PacManBoard.Tyle getNextTyle(int deltaX, int deltaY, PacManBoard.Tyle[][] tyle_board) {
-		int tempX = getX();
-		int tempY = getY();
-		int dimension = getDimension();
-
-		if (deltaX == 0 && deltaY == 0)
-			return null;
-		if (deltaX == 0 && getX() % dimension == 0) {
-			while (tempY == getY() || tempY % dimension != 0) {
-				tempY += deltaY;
-			}
-		} else if (deltaY == 0 && getY() % dimension == 0) {
-			while (tempX == getX() || tempX % dimension != 0) {
-				tempX += deltaX;
-			}
-		} else
-			return null;
-		return tyle_board[tempY / dimension][tempX / dimension];
+	
+	public boolean isValid(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
+		int column = getX() / dimension + dx;
+		int row = getY() / dimension + dy;
+		
+		int num_columns = tyle_board[0].length, num_rows = tyle_board.length;
+		if (column < 0 || column >= num_columns || row < 0 || row >= num_rows)
+			return false;
+		if (tyle_board[row][column].type == TyleType.UNREACHABLE || tyle_board[row][column].type == TyleType.WALL)
+			return false;
+		if (tyle_board[row][column].type == TyleType.GHOSTGATE)
+			return false;
+		return true;
 	}
 
 	public void updateDeltaX(int deltaX) {
@@ -258,46 +235,8 @@ public class PacMan {
 		return start_count;
 	}
 	
-	
-	//////////////////////////////////////////////////////////////////////////////////////////
-	
-	public void update(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
-		if (getIfValid(dx, dy, tyle_board)) {
-			curDeltaX = dx;
-			curDeltaY = dy;
-			updateSpeed(speed);
-		}
-		else if (!getIfValid(curDeltaX, curDeltaY, tyle_board)) {
-			updateSpeed(0);
-		}
-		updateX(curDeltaX);
-		updateY(curDeltaY);
+	public int getSpeedPercent() {
+		return speed_percent;
 	}
-	
-	public boolean getIfValid(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
-		if (tyle_board[getY() / getDimension()][getX() / getDimension()].type == TyleType.TELEPORT) {
-			teleport(tyle_board[getY() / getDimension()][getX() / getDimension()], tyle_board);
-		}
-
-		if (isValid(dx, dy, tyle_board)) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean isValid(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
-		int column = getX() / getDimension() + dx, row = getY() / getDimension() + dy;
-		int num_columns = tyle_board[0].length, num_rows = tyle_board.length;
-		if (column < 0 || column >= num_columns || row < 0 || row >= num_rows)
-			return false;
-		if (tyle_board[row][column].type == TyleType.UNREACHABLE || tyle_board[row][column].type == TyleType.WALL)
-			return false;
-		if (tyle_board[row][column].type == TyleType.GHOSTGATE)
-			return false;
-		return true;
-	}
-	
-	
 
 }

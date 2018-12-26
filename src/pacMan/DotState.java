@@ -1,5 +1,8 @@
 package pacMan;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pacMan.PacManBoard.Tyle;
 import pacMan.PacManBoard.TyleType;
 
@@ -15,24 +18,38 @@ public class DotState {
 		}
 	}
 	
-	public DotState(State state, int powerups_remaining) {
+	public DotState(PacMan pacman, State state, PacManBoard.Tyle[][] tyle_board) {
 		this.state = state;
+		this.tyle_board = tyle_board;
+		this.pacman = pacman;
+		getPowerUpLocations();
 	}
 	
 	private State state;
+	private PacMan pacman;
+	private int ghosts_remaining = 4;
 	public int blueTimer = 0;
 	public boolean blinking;
+	private List<int[]> powerup_pos = new ArrayList<int[]>();
+	
+	private PacManBoard.Tyle[][] tyle_board;
+	
+	public void powerupHandler(PacMan pacman) {
+		updateState();
+		incrementState();
+		getPowerupCollision();
+	}
 	
 	public void updateState() {
 		if (state != State.OFF) {
 			blueTimer++;
 		}
 		if (blueTimer >= 300 && blueTimer < 480) {
-			state = State.OFF;
-			blinking = true;
+			blinking = true;		
 		}
 		if (blueTimer == 480) {
 			state = State.OFF;
+			resetGhosts();
 			blueTimer = 0;
 			blinking = false;
 		}
@@ -45,13 +62,13 @@ public class DotState {
 	}
 	
 	public void incrementState() {
-		if (state == State.BLUE_200)
+		if (ghosts_remaining == 3)
 			state = State.BLUE_400;
-		if (state == State.BLUE_400)
+		if (ghosts_remaining == 2)
 			state = State.BLUE_800;
-		if (state == State.BLUE_800)
+		if (ghosts_remaining == 1)
 			state = State.BLUE_1600;
-		if (state == State.BLUE_1600)
+		if (ghosts_remaining == 0)
 			state = State.OFF;
 	}
 	
@@ -59,15 +76,50 @@ public class DotState {
 		return state;
 	}
 	
-	public void getPowerupCollision(Character pacman, PacManBoard.Tyle[][] tyle_board, int dimension) {
-		int row = pacman.getY()/dimension;
-		int column = pacman.getX()/dimension;
+	public void getPowerupCollision() {
+		int row = pacman.getY()/PacManBoard.dimension;
+		int column = pacman.getX()/PacManBoard.dimension;
 		
 		if (tyle_board[row][column].type == TyleType.POWERUP) {
 			setStateToBlue();
-			// pacman.updateBlueState(isBlue, tyle_board)
+			pacman.state = PacMan.State.POWERED;
 			tyle_board[row][column] = Tyle.POWERUP_USED;
 		}
+	}
+	
+	public void getPowerUpLocations() {
+		int boardRows = tyle_board.length;
+		int boardColumns = tyle_board[0].length;
+		for (int i = 0; i < boardRows; i++) {
+			for (int j = 0; j < boardColumns; j++) {
+				if (tyle_board[i][j] == Tyle.POWERUP) {
+					int[] position = new int[2];
+					position[0] = i;
+					position[1] = j;
+					powerup_pos.add(position);
+				}
+			}
+		}
+	}
+
+	public void blinkPowerUps(int frame, int rate) {
+		if (frame % rate == 0) {
+			for (int i = 0; i < powerup_pos.size(); i++) {
+				if (tyle_board[powerup_pos.get(i)[0]][powerup_pos.get(i)[1]] == Tyle.POWERUP) {
+					tyle_board[powerup_pos.get(i)[0]][powerup_pos.get(i)[1]] = Tyle.POWERUP_BLINKED;
+				} else if (tyle_board[powerup_pos.get(i)[0]][powerup_pos.get(i)[1]] == Tyle.POWERUP_BLINKED) {
+					tyle_board[powerup_pos.get(i)[0]][powerup_pos.get(i)[1]] = Tyle.POWERUP;
+				}
+			}
+		}
+	}
+	
+	public void decrementGhosts() {
+		ghosts_remaining--;
+	}
+	
+	public void resetGhosts() {
+		ghosts_remaining = 4;
 	}
 
 }
