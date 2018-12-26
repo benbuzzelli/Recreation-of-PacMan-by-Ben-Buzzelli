@@ -57,7 +57,8 @@ public class CharacterEventHandler {
 						ghost.ghostStart();
 					}
 					if (ghost.getStartCount() == -1) {
-						ghost.updateMove(pacman.getX(), pacman.getY());
+						// ghost.updateMove(pacman.getX(), pacman.getY());
+						ghost.makeMove(pacman);
 					}
 				
 					ghost.stateHandler(dotstate);

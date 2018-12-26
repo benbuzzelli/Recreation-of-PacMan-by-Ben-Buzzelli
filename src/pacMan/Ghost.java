@@ -12,7 +12,7 @@ import pacMan.PacManBoard.TyleType;
 public abstract class Ghost {
 
 	public enum TargetingState {
-		ATTACK, SCATTER, GO_HOME, AVOID_GHOST
+		ATTACK, SCATTER, GO_HOME
 	}
 
 	public enum State {
@@ -36,7 +36,7 @@ public abstract class Ghost {
 		}
 	}
 
-	public Ghost(GhostName ghost, State state, int x, int y, /*int scatterX, int scatterY,*/ PacManBoard.Tyle[][] tyle_board, TargetingState targeting_state) {
+	public Ghost(GhostName ghost, State state, int x, int y, PacManBoard.Tyle[][] tyle_board, TargetingState targeting_state) {
 		this.ghost = ghost;
 		this.state = state;
 		this.x = x;
@@ -52,10 +52,11 @@ public abstract class Ghost {
 	private int x;
 	private int y;
 	private int target_clock = 0;
-	private int scatterX;
-	private int scatterY;
-	private Random rand = new Random();
 
+	private int[] attack_target;
+	private int[] scatter_target;
+	private int[] home_target = new int[] {240, 244};
+	
 	private int density = 1;
 
 	private String[] eyes = { "images/eyes_up.png", "images/eyes_down.png", "images/eyes_left.png", "images/eyes_right.png" };
@@ -75,8 +76,10 @@ public abstract class Ghost {
 	private int start_count = 0;
 	private boolean switching_state;
 	public int image_frame = 0;
-
-	public abstract int[] getTarget(PacMan pacman);
+	
+	public abstract void updateAttackTarget(PacMan pacman);
+	public abstract void updateScatterTarget();
+	public abstract void setHomeTarget();
 	
 	public abstract void resetGhost();
 
@@ -100,6 +103,29 @@ public abstract class Ghost {
 
 		image_frame++;
 	}
+	
+	
+	public void makeMove(PacMan pacman) {
+		int[] target = new int[2];
+		
+		updateAttackTarget(pacman);
+		
+		if (targeting_state == TargetingState.ATTACK) {
+			target = attack_target;
+		} else if (targeting_state == TargetingState.SCATTER) {
+			target = scatter_target;
+		} else if (targeting_state == TargetingState.GO_HOME) {
+			target = home_target;
+			goHome(target);
+			updateX(getDeltaX());
+			updateY(getDeltaY());
+			return;
+		}
+		
+		getGhostMove(target[0], target[1]);
+		updateX(getDeltaX());
+		updateY(getDeltaY());
+	}
 
 	public void updateMove(int newX, int newY) {
 		if (target_clock == 1200)
@@ -112,7 +138,7 @@ public abstract class Ghost {
 					// getGhostMove(newX, newY);
 			}
 		} else {
-			goHome();
+			goHome(new int[] {240, 224});
 		}
 		updateX(getDeltaX());
 		updateY(getDeltaY());
@@ -189,9 +215,9 @@ public abstract class Ghost {
 			return false;
 		}
 		int column = getX() / getDimension() + dx, row = getY() / getDimension() + dy;
-		int num_columns = tyle_board[0].length, num_rows = tyle_board.length;
-		if (column < 0 || column >= num_columns || row < 0 || row >= num_rows)
-			return false;
+		// int num_columns = tyle_board[0].length, num_rows = tyle_board.length;
+		// if (column < 0 || column >= num_columns || row < 0 || row >= num_rows)
+			// return false;
 		if (tyle_board[row][column].type == TyleType.UNREACHABLE || tyle_board[row][column].type == TyleType.WALL)
 			return false;
 		if (tyle_board[row][column].type == TyleType.GHOSTGATE && dy == 1 && density == 1)
@@ -245,6 +271,7 @@ public abstract class Ghost {
 		if (density == 1 && this.x / dimension == x / dimension && this.y / dimension == y / dimension) {
 			if (state != State.DEFAULT && state != State.HEAD_HOME) {
 				state = State.HEAD_HOME;
+				targeting_state = TargetingState.GO_HOME;
 				dotstate.decrementGhosts();
 				switching_state = true;
 			} else if (state != State.HEAD_HOME) {
@@ -254,14 +281,15 @@ public abstract class Ghost {
 		return false;
 	}
 
-	public void goHome() {
+	public void goHome(int[] target) {
 		if (x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0) {
-			getGhostMove(240, 224);
+			getGhostMove(target[0], target[1]);
 			switching_state = false;
 			density = 0;
 		}
 		if (x == 240 && y == 224) {
 			state = State.DEFAULT;
+			targeting_state = TargetingState.ATTACK;
 			density = 1;
 		}
 	}
@@ -392,6 +420,18 @@ public abstract class Ghost {
 	
 	public void updateDensity(int density) {
 		this.density = density;
+	}
+	
+	public void setAttackTarget(int[] target) {
+		attack_target = target;
+	}
+	
+	public void setScatterTarget(int[] target) {
+		scatter_target = target;
+	}
+	
+	public void setHomeTarget(int[] target) {
+		home_target = target;
 	}
 
 }

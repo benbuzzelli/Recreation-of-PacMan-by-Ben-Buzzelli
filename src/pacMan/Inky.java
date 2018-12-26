@@ -10,9 +10,16 @@ public class Inky extends Ghost {
 		super(GhostName.INKY, State.DEFAULT, x, y, tyle_board, TargetingState.ATTACK);
 	}
 	
-	public int[] getTarget(PacMan pacman) {
-		int[] target = new int[2];
-		return target;
+	public void updateAttackTarget(PacMan pacman) {
+		setAttackTarget(new int[] {pacman.getX(), pacman.getDeltaY()});
+	}
+	
+	public void updateScatterTarget() {
+		
+	}
+	
+	public void setHomeTarget() {
+		
 	}
 
 	public void resetGhost() {

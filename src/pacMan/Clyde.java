@@ -10,35 +10,15 @@ public class Clyde extends Ghost {
 		super(GhostName.CLYDE, State.DEFAULT, x, y, tyle_board, TargetingState.ATTACK);
 	}
 	
-	public int[] getTarget(PacMan pacman) {
-		int[] target = new int[2];
-		
-		target = getTargetHelper(pacman.getDeltaX(), pacman.getDeltaY());
-		
-		return target;
+	public void updateAttackTarget(PacMan pacman) {
+		setAttackTarget(new int[] {pacman.getX(), pacman.getDeltaY()});
 	}
 	
-	public int[] getTargetHelper(int dx, int dy) {
-		int row = dy / PacManBoard.dimension;
-		int column = dx / PacManBoard.dimension;
-		int[] temp_delta = {column, row};
+	public void updateScatterTarget() {
 		
-		PacManBoard.Tyle[][] board = getTyleBoard();
-		
-		while (true) {
-			
-			row += dy;
-			column += dx;
-			
-			if (board[row][column].type != PacManBoard.TyleType.WALL || board[row][column].type != PacManBoard.TyleType.UNREACHABLE)
-				return temp_delta;
-			if (board[row][column].type != PacManBoard.TyleType.GHOSTGATE)
-				return temp_delta;
-			
-			temp_delta[0] = column;
-			temp_delta[1] = row;
-			
-		}
+	}
+	
+	public void setHomeTarget() {
 		
 	}
 
