@@ -13,6 +13,20 @@ public class Blinky extends Ghost {
 		int[] target = {pacman.getX(), pacman.getDeltaY()};
 		return target;
 	}
+	
+	
+	public void updateAttackTarget(PacMan pacman) {
+		setAttackTarget(new int[] {pacman.getX(), pacman.getDeltaY()});
+	}
+	
+	public void updateScatterTarget() {
+		
+	}
+	
+	public void setHomeTarget() {
+		
+	}
+	
 
 	public void resetGhost() {
 		resetX(248);
