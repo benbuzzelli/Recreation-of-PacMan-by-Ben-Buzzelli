@@ -1,4 +1,5 @@
 package pacMan;
+import pacMan.TyleContainer.Tyle;
 
 public class CharacterEventHandler {
 
@@ -10,9 +11,9 @@ public class CharacterEventHandler {
 	
 	private DotState dotstate;
 	
-	private PacManBoard.Tyle[][] tyle_board;
+	private Tyle[][] tyle_board;
 
-	public CharacterEventHandler(int frames_per_cycle, PacMan pacman, Ghost[] ghosts, PacManBoard.Tyle[][] tyle_board) {
+	public CharacterEventHandler(int frames_per_cycle, PacMan pacman, Ghost[] ghosts, Tyle[][] tyle_board) {
 		this.frames_per_cycle = frames_per_cycle;
 		this.pacman = pacman;
 		this.ghosts = ghosts;

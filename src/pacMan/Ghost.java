@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import pacMan.PacManBoard.Tyle;
-import pacMan.PacManBoard.TyleType;
+import pacMan.TyleContainer.Tyle;
+import pacMan.TyleContainer.TyleType;
+
 
 public abstract class Ghost {
 
@@ -36,6 +37,7 @@ public abstract class Ghost {
 		}
 	}
 
+
 	public Ghost(GhostName ghost, State state, int x, int y, PacManBoard.Tyle[][] tyle_board, TargetingState targeting_state) {
 		this.ghost = ghost;
 		this.state = state;
@@ -45,7 +47,7 @@ public abstract class Ghost {
 		this.targeting_state = targeting_state;
 	}
 
-	private PacManBoard.Tyle[][] tyle_board;
+	private Tyle[][] tyle_board;
 	public TargetingState targeting_state;
 	private State state;
 	private GhostName ghost;
@@ -227,11 +229,11 @@ public abstract class Ghost {
 		return true;
 	}
 
-	public void teleport(PacManBoard.Tyle type) {
-		if (type == PacManBoard.Tyle.TELEPORT_SQUARE_A && curDeltaX == -1) {
+	public void teleport(Tyle type) {
+		if (type == Tyle.TELEPORT_SQUARE_A && curDeltaX == -1) {
 			for (int i = 0; i < tyle_board.length; i++) {
 				for (int j = 0; j < tyle_board[0].length; j++) {
-					if (tyle_board[i][j] == PacManBoard.Tyle.TELEPORT_SQUARE_B) {
+					if (tyle_board[i][j] == Tyle.TELEPORT_SQUARE_B) {
 						this.x = j * dimension;
 						this.y = i * dimension;
 						return;
@@ -239,10 +241,10 @@ public abstract class Ghost {
 				}
 			}
 		}
-		if (type == PacManBoard.Tyle.TELEPORT_SQUARE_B && curDeltaX == 1) {
+		if (type == Tyle.TELEPORT_SQUARE_B && curDeltaX == 1) {
 			for (int i = 0; i < tyle_board.length; i++) {
 				for (int j = 0; j < tyle_board[0].length; j++) {
-					if (tyle_board[i][j] == PacManBoard.Tyle.TELEPORT_SQUARE_A) {
+					if (tyle_board[i][j] == Tyle.TELEPORT_SQUARE_A) {
 						this.x = j * dimension;
 						this.y = i * dimension;
 						return;
@@ -302,7 +304,7 @@ public abstract class Ghost {
 		if (state == State.BLINKING) {
 			character = blue_animator.generateAnimation(12, blink);
 		} else {
-			this.character = Toolkit.getDefaultToolkit().getImage("blue.png");
+			this.character = Toolkit.getDefaultToolkit().getImage("images/blue.png");
 		}
 	}
 
@@ -414,7 +416,7 @@ public abstract class Ghost {
 		return speed_percent;
 	}
 	
-	public PacManBoard.Tyle[][] getTyleBoard() {
+	public Tyle[][] getTyleBoard() {
 		return tyle_board;
 	}
 	

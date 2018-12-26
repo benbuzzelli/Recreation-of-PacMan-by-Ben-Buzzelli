@@ -3,10 +3,13 @@ package pacMan;
 import pacMan.Ghost.GhostName;
 import pacMan.Ghost.State;
 import pacMan.Ghost.TargetingState;
+import pacMan.TyleContainer.Tyle;
+import pacMan.TyleContainer.TyleType;
+
 
 public class Clyde extends Ghost {
 
-	public Clyde(int x, int y, PacManBoard.Tyle[][] tyle_board) {
+	public Clyde(int x, int y, Tyle[][] tyle_board) {
 		super(GhostName.CLYDE, State.DEFAULT, x, y, tyle_board, TargetingState.ATTACK);
 	}
 	

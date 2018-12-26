@@ -3,8 +3,8 @@ package pacMan;
 import java.util.ArrayList;
 import java.util.List;
 
-import pacMan.PacManBoard.Tyle;
-import pacMan.PacManBoard.TyleType;
+import pacMan.TyleContainer.Tyle;
+import pacMan.TyleContainer.TyleType;
 
 public class DotState {
 
@@ -18,7 +18,7 @@ public class DotState {
 		}
 	}
 	
-	public DotState(PacMan pacman, State state, PacManBoard.Tyle[][] tyle_board) {
+	public DotState(PacMan pacman, State state, Tyle[][] tyle_board) {
 		this.state = state;
 		this.tyle_board = tyle_board;
 		this.pacman = pacman;
@@ -32,7 +32,7 @@ public class DotState {
 	public boolean blinking;
 	private List<int[]> powerup_pos = new ArrayList<int[]>();
 	
-	private PacManBoard.Tyle[][] tyle_board;
+	private Tyle[][] tyle_board;
 	
 	public void powerupHandler(PacMan pacman) {
 		updateState();

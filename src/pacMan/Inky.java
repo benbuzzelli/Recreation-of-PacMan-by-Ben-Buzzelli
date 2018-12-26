@@ -3,10 +3,11 @@ package pacMan;
 import pacMan.Ghost.GhostName;
 import pacMan.Ghost.State;
 import pacMan.Ghost.TargetingState;
+import pacMan.TyleContainer.Tyle;
 
 public class Inky extends Ghost {
 
-	public Inky(int x, int y, PacManBoard.Tyle[][] tyle_board) {
+	public Inky(int x, int y, Tyle[][] tyle_board) {
 		super(GhostName.INKY, State.DEFAULT, x, y, tyle_board, TargetingState.ATTACK);
 	}
 	

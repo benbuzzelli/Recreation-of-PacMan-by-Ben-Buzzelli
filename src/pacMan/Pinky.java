@@ -2,10 +2,11 @@ package pacMan;
 
 import pacMan.Ghost.State;
 import pacMan.Ghost.TargetingState;
+import pacMan.TyleContainer.Tyle;
 
 public class Pinky extends Ghost {
 
-	public Pinky(int x, int y, PacManBoard.Tyle[][] tyle_board) {
+	public Pinky(int x, int y, Tyle[][] tyle_board) {
 		super(GhostName.PINKY, State.DEFAULT, x, y, /*16, -16,*/ tyle_board, TargetingState.ATTACK);
 	}
 	
