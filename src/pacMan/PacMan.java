@@ -15,7 +15,7 @@ public class PacMan {
 	public enum Name {
 		PACMAN;
 
-		String filename_prefix = "pacman";
+		String filename_prefix = "images/pacman";
 
 	}
 
