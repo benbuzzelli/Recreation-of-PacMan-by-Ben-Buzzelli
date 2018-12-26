@@ -3,8 +3,9 @@ package pacMan;
 import java.awt.Image;
 import java.awt.Toolkit;
 
-import pacMan.PacManBoard.Tyle;
-import pacMan.PacManBoard.TyleType;
+import pacMan.TyleContainer.Tyle;
+import pacMan.TyleContainer.TyleType;
+
 
 public class PacMan {
 
@@ -65,24 +66,24 @@ public class PacMan {
 		}
 	}
 	
-	public void setSpeed(PacManBoard.Tyle[][] tyle_board) {
+	public void setSpeed(Tyle[][] tyle_board) {
 		if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension] == Tyle.DOT_SQUARE)
 			speed_percent = 70;
 		else
 			speed_percent = 80;
 	}
 
-	public void updateDots(PacManBoard.Tyle[][] tyle_board) {
+	public void updateDots(Tyle[][] tyle_board) {
 		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT) {
 			tyle_board[y / dimension][x / dimension] = Tyle.BLACK_SQUARE;
 		}
 	}
 
-	public void teleport(PacManBoard.Tyle type, PacManBoard.Tyle[][] tyle_board) {
-		if (type == PacManBoard.Tyle.TELEPORT_SQUARE_A && curDeltaX == -1) {
+	public void teleport(Tyle type, Tyle[][] tyle_board) {
+		if (type == Tyle.TELEPORT_SQUARE_A && curDeltaX == -1) {
 			for (int i = 0; i < tyle_board.length; i++) {
 				for (int j = 0; j < tyle_board[0].length; j++) {
-					if (tyle_board[i][j] == PacManBoard.Tyle.TELEPORT_SQUARE_B) {
+					if (tyle_board[i][j] == Tyle.TELEPORT_SQUARE_B) {
 						this.x = j * dimension;
 						this.y = i * dimension;
 						return;
@@ -90,10 +91,10 @@ public class PacMan {
 				}
 			}
 		}
-		if (type == PacManBoard.Tyle.TELEPORT_SQUARE_B && curDeltaX == 1) {
+		if (type == Tyle.TELEPORT_SQUARE_B && curDeltaX == 1) {
 			for (int i = 0; i < tyle_board.length; i++) {
 				for (int j = 0; j < tyle_board[0].length; j++) {
-					if (tyle_board[i][j] == PacManBoard.Tyle.TELEPORT_SQUARE_A) {
+					if (tyle_board[i][j] == Tyle.TELEPORT_SQUARE_A) {
 						this.x = j * dimension;
 						this.y = i * dimension;
 						return;
@@ -134,7 +135,7 @@ public class PacMan {
 		}
 	}
 
-	public void update(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
+	public void update(int dx, int dy, Tyle[][] tyle_board) {
 		if (x % dimension == 0 && y % dimension == 0) {
 			if (getIfValid(dx, dy, tyle_board)) {
 				curDeltaX = dx;
@@ -149,7 +150,7 @@ public class PacMan {
 		updateY(curDeltaY);
 	}
 	
-	public boolean getIfValid(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
+	public boolean getIfValid(int dx, int dy, Tyle[][] tyle_board) {
 		if (tyle_board[getY() / getDimension()][getX() / getDimension()].type == TyleType.TELEPORT) {
 			teleport(tyle_board[getY() / getDimension()][getX() / getDimension()], tyle_board);
 		}
@@ -161,7 +162,7 @@ public class PacMan {
 		return false;
 	}
 	
-	public boolean isValid(int dx, int dy, PacManBoard.Tyle[][] tyle_board) {
+	public boolean isValid(int dx, int dy, Tyle[][] tyle_board) {
 		int column = getX() / dimension + dx;
 		int row = getY() / dimension + dy;
 		

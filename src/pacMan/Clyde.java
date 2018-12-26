@@ -3,10 +3,13 @@ package pacMan;
 import pacMan.Ghost.GhostName;
 import pacMan.Ghost.State;
 import pacMan.Ghost.TargetingState;
+import pacMan.TyleContainer.Tyle;
+import pacMan.TyleContainer.TyleType;
+
 
 public class Clyde extends Ghost {
 
-	public Clyde(int x, int y, PacManBoard.Tyle[][] tyle_board) {
+	public Clyde(int x, int y, Tyle[][] tyle_board) {
 		super(GhostName.CLYDE, State.DEFAULT, x, y, tyle_board, TargetingState.ATTACK);
 	}
 	
@@ -23,16 +26,16 @@ public class Clyde extends Ghost {
 		int column = dx / PacManBoard.dimension;
 		int[] temp_delta = {column, row};
 		
-		PacManBoard.Tyle[][] board = getTyleBoard();
+		Tyle[][] board = getTyleBoard();
 		
 		while (true) {
 			
 			row += dy;
 			column += dx;
 			
-			if (board[row][column].type != PacManBoard.TyleType.WALL || board[row][column].type != PacManBoard.TyleType.UNREACHABLE)
+			if (board[row][column].type != TyleType.WALL || board[row][column].type != TyleType.UNREACHABLE)
 				return temp_delta;
-			if (board[row][column].type != PacManBoard.TyleType.GHOSTGATE)
+			if (board[row][column].type != TyleType.GHOSTGATE)
 				return temp_delta;
 			
 			temp_delta[0] = column;

@@ -1,10 +1,11 @@
 package pacMan;
 
 import pacMan.Ghost.State;
+import pacMan.TyleContainer.Tyle;
 
 public class Blinky extends Ghost {
 
-	public Blinky(int x, int y, PacManBoard.Tyle[][] tyle_board) {
+	public Blinky(int x, int y, Tyle[][] tyle_board) {
 		super(GhostName.BLINKY, State.DEFAULT, x, y, tyle_board, TargetingState.ATTACK);
 	}
 	
