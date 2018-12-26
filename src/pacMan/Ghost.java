@@ -38,7 +38,7 @@ public abstract class Ghost {
 	}
 
 
-	public Ghost(GhostName ghost, State state, int x, int y, PacManBoard.Tyle[][] tyle_board, TargetingState targeting_state) {
+	public Ghost(GhostName ghost, State state, int x, int y, Tyle[][] tyle_board, TargetingState targeting_state) {
 		this.ghost = ghost;
 		this.state = state;
 		this.x = x;
