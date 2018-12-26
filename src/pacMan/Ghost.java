@@ -20,14 +20,14 @@ public abstract class Ghost {
 	}
 
 	public enum GhostName {
-		INKY(new String[][] { { "inky_up.png", "inky_up1.png" }, { "inky_down.png", "inky_down1.png" },
-				{ "inky_left.png", "inky_left1.png" }, { "inky_right.png", "inky_right1.png" } }),
-		BLINKY(new String[][] { { "blinky_up.png", "blinky_up1.png" }, { "blinky_down.png", "blinky_down1.png" },
-				{ "blinky_left.png", "blinky_left1.png" }, { "blinky_right.png", "blinky_right1.png" } }),
-		PINKY(new String[][] { { "pinky_up.png", "pinky_up1.png" }, { "pinky_down.png", "pinky_down1.png" },
-				{ "pinky_left.png", "pinky_left1.png" }, { "pinky_right.png", "pinky_right1.png" } }),
-		CLYDE(new String[][] { { "clyde_up.png", "clyde_up1.png" }, { "clyde_down.png", "clyde_down1.png" },
-				{ "clyde_left.png", "clyde_left1.png" }, { "clyde_right.png", "clyde_right1.png" } });
+		INKY(new String[][] { { "images/inky_up.png", "images/inky_up1.png" }, { "images/inky_down.png", "images/inky_down1.png" },
+				{ "images/inky_left.png", "images/inky_left1.png" }, { "images/inky_right.png", "images/inky_right1.png" } }),
+		BLINKY(new String[][] { { "images/blinky_up.png", "images/blinky_up1.png" }, { "images/blinky_down.png", "images/blinky_down1.png" },
+				{ "images/blinky_left.png", "images/blinky_left1.png" }, { "images/blinky_right.png", "images/blinky_right1.png" } }),
+		PINKY(new String[][] { { "images/pinky_up.png", "images/pinky_up1.png" }, { "images/pinky_down.png", "images/pinky_down1.png" },
+				{ "images/pinky_left.png", "images/pinky_left1.png" }, { "images/pinky_right.png", "images/pinky_right1.png" } }),
+		CLYDE(new String[][] { { "images/clyde_up.png", "images/clyde_up1.png" }, { "images/clyde_down.png", "images/clyde_down1.png" },
+				{ "images/clyde_left.png", "images/clyde_left1.png" }, { "images/clyde_right.png", "images/clyde_right1.png" } });
 
 		public String[][] filename;
 
@@ -58,8 +58,8 @@ public abstract class Ghost {
 
 	private int density = 1;
 
-	private String[] eyes = { "eyes_up.png", "eyes_down.png", "eyes_left.png", "eyes_right.png" };
-	private String[] blink = { "blue_blink1.png", "blue_blink2.png" };
+	private String[] eyes = { "images/eyes_up.png", "images/eyes_down.png", "images/eyes_left.png", "images/eyes_right.png" };
+	private String[] blink = { "images/blue_blink1.png", "images/blue_blink2.png" };
 
 	public String curName;
 	public Image character;
