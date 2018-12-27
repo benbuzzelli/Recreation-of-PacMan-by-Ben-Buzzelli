@@ -69,8 +69,8 @@ public class PacMan {
 	public void resetPacMan() {
 		start_count = 0;
 		speed_percent = 80;
-		resetX(240);
-		resetY(384);
+		resetX(spawnX);
+		resetY(spawnY);
 	}
 	
 	public void pacmanStart() {

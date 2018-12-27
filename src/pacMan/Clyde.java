@@ -6,7 +6,7 @@ import pacMan.TyleContainer.Tyle;
 public class Clyde extends Ghost {
 
 	public Clyde(Tyle[][] tyle_board) {
-		super(GhostName.CLYDE, State.DEFAULT, tyle_board, TargetingState.ATTACK, 40);
+		super(GhostName.CLYDE, State.DEFAULT, tyle_board, TargetingState.ATTACK, HomeState.IS_HOME, 60);
 	}
 	
 	public void updateAttackTarget(PacMan pacman) {
@@ -16,14 +16,10 @@ public class Clyde extends Ghost {
 	public void updateScatterTarget() {
 		setScatterTarget(new int[] {32, 544});
 	}
-	
-	public void setHomeTarget() {
-		
-	}
 
 	public void resetGhost() {
-		resetX(280);
-		resetY(232);
+		resetX(spawnX);
+		resetY(spawnY);
 		updateDeltaX(0);
 		updateDeltaY(0);
 		updateDensity(1);
@@ -32,46 +28,6 @@ public class Clyde extends Ghost {
 		setHomeState(HomeState.IS_HOME);
 		setDotCounterState(DotCounterState.INACTIVE);
 		resetDotsCaptured();
-	}
-
-	public void ghostStart(boolean global_counter) {
-		if (getHomeState() == HomeState.IS_HOME) {
-			updateSpeed(getSpeed());
-			if (getDeltaY() == 0)
-				updateDeltaY(1);
-			if (getY() == 16 * PacManBoard.dimension - PacManBoard.dimension / 2)
-				updateDeltaY(-1);
-			else if (getY() == 14 * PacManBoard.dimension + PacManBoard.dimension / 2) {
-				updateDeltaY(1);
-			}
-			updateX(getDeltaX());
-			updateY(getDeltaY());
-			if (getNumDotsCaptured() >= getDotTriggerCount()  && !global_counter) {
-				setDotCounterState(DotCounterState.INACTIVE);
-				setHomeState(HomeState.IS_EXITING);
-			}
-		} else if (getHomeState() == HomeState.IS_EXITING) {
-			ghostStartExit();
-		}
-	}
-	
-	public void ghostStartExit() {
-		updateSpeed(1);
-		if (getX() != 15 * PacManBoard.dimension + PacManBoard.dimension / 2) {
-			updateDeltaX(-1);
-			updateDeltaY(0);
-		} else if (getY() != 12 * PacManBoard.dimension) {
-			updateDeltaX(0);
-			updateDeltaY(-1);
-		} else {
-			updateDeltaX(-1);
-			updateDeltaY(0);
-			setHomeState(HomeState.HAS_EXITED);
-			updateSpeed(2);
-			return;
-		}
-		updateX(getDeltaX());
-		updateY(getDeltaY());
 	}
 
 }
