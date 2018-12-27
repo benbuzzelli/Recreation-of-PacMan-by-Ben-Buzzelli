@@ -74,9 +74,8 @@ public class PacMan {
 	}
 
 	public void updateDots(Tyle[][] tyle_board) {
-		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT) {
+		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT)
 			tyle_board[y / dimension][x / dimension] = Tyle.BLACK_SQUARE;
-		}
 	}
 
 	public void teleport(Tyle type, Tyle[][] tyle_board) {

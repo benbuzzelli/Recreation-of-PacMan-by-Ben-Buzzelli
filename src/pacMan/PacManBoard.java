@@ -145,10 +145,10 @@ public class PacManBoard extends JPanel implements KeyListener {
 	}
 	
 	private void setGhosts(Tyle[][] tyleBoard) {
-		ghosts[0] = new Clyde(280, 232, tyleBoard);
-		ghosts[1] = new Inky(216, 232, tyleBoard);
-		ghosts[2] = new Blinky(248, 192, tyleBoard);
-		ghosts[3] = new Pinky(248, 248, tyleBoard);
+		ghosts[0] = new Blinky(248, 192, tyleBoard);
+		ghosts[1] = new Pinky(248, 248, tyleBoard);
+		ghosts[2] = new Inky(216, 232, tyleBoard);
+		ghosts[3] = new Clyde(280, 232, tyleBoard);
 	}
 
 	public void startGame() throws FileNotFoundException {
