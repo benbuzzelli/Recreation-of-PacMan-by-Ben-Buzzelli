@@ -28,7 +28,13 @@ public class PacMan {
 	public Image character = Toolkit.getDefaultToolkit().getImage(name.filename_prefix + filename_appendix[0][0]);
 	public int image_frame = 0;
 
+	private Tyle[][] tyle_board;
+	
 	public boolean isBlueGhost;
+	
+	private char spawn_char = 'N';
+	private int spawnX;
+	private int spawnY;
 	private int y;
 	private int x;
 	private final int dimension = 16;
@@ -39,9 +45,25 @@ public class PacMan {
 	private int start_count = 0;
 	private int speed_percent = 80;
 	
-	public PacMan(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public PacMan(Tyle[][] tyle_board) {
+		this.tyle_board = tyle_board;
+		setSpawnLocation();
+		this.x = spawnX;
+		this.y = spawnY;
+	}
+	
+	public void setSpawnLocation() {
+		int rows = tyle_board.length;
+		int columns = tyle_board[0].length;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				if (tyle_board[i][j].c == spawn_char) {
+					spawnX = j * PacManBoard.dimension + PacManBoard.dimension / 2;
+					spawnY = i * PacManBoard.dimension;
+				}
+			}
+		}
+		
 	}
 
 	public void resetPacMan() {

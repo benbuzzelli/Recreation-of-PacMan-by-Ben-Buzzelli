@@ -4,8 +4,8 @@ import pacMan.TyleContainer.Tyle;
 
 public class Pinky extends Ghost {
 
-	public Pinky(int x, int y, Tyle[][] tyle_board) {
-		super(GhostName.PINKY, State.DEFAULT, x, y, tyle_board, TargetingState.ATTACK, 0);
+	public Pinky(Tyle[][] tyle_board) {
+		super(GhostName.PINKY, State.DEFAULT, tyle_board, TargetingState.ATTACK, 0);
 	}
 	
 	public void updateAttackTarget(PacMan pacman) {
@@ -36,6 +36,8 @@ public class Pinky extends Ghost {
 	public void ghostStart(boolean global_counter) {
 		if (getHomeState() == HomeState.IS_HOME) {
 			updateSpeed(getSpeed());
+			if (getDeltaY() == 0)
+				updateDeltaY(-1);
 			if (getY() == 16 * PacManBoard.dimension - PacManBoard.dimension / 2)
 				updateDeltaY(-1);
 			else if (getY() == 14 * PacManBoard.dimension + PacManBoard.dimension / 2) {

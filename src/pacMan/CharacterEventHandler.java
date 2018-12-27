@@ -7,24 +7,31 @@ import pacMan.TyleContainer.TyleType;
 
 public class CharacterEventHandler {
 
+	// *********************************************************************************//
+	// VARIABLE DECLARATION
+	// *********************************************************************************//
 	private int cycle_frame = 0;
 	private final int frames_per_cycle;
 
 	private PacMan pacman;
 	private Ghost[] ghosts;
 	
-	private DotState dotstate;
+	private PowerUp power_up; // This class keeps track of things to do with power-ups
+	
 	private int global_dots_captured = 0;
 	private boolean global_dot_counter;
 	private int[] globat_dot_limit = {0, 7, 17, 32};
 	
 	private Tyle[][] tyle_board;
-
+	// *********************************************************************************//
+	// *********************************************************************************//
+	// FUNCTIONS TO BE CALLED BEFORE postKeyPressEventHandler()
+	// *********************************************************************************//
 	public CharacterEventHandler(int frames_per_cycle, PacMan pacman, Ghost[] ghosts, Tyle[][] tyle_board) {
 		this.frames_per_cycle = frames_per_cycle;
 		this.pacman = pacman;
 		this.ghosts = ghosts;
-		this.dotstate = new DotState(pacman, DotState.State.OFF, tyle_board);
+		this.power_up = new PowerUp(pacman, PowerUp.State.OFF, tyle_board);
 		this.tyle_board = tyle_board;
 	}
 
@@ -36,6 +43,8 @@ public class CharacterEventHandler {
 		}
 		pacman.updateImage();
 	}
+	// *********************************************************************************//
+	// *********************************************************************************//
 	
 	/**
 	 * Run in the startGame() in a continuous while-loop. Works by updating image of pacMan based on his state and updating each of the ghosts individually
@@ -44,8 +53,8 @@ public class CharacterEventHandler {
 	public void postKeyPressEventHandler(int[] delta) {
 		pacmanHandler();
 		
-		dotstate.blinkPowerUps(cycle_frame, 10);
-		dotstate.powerupHandler(pacman);
+		power_up.blinkPowerUps(cycle_frame, 10);
+		power_up.powerupHandler(pacman);
 		
 		if (isNotStalled(pacman.getSpeedPercent())) {
 			pacman.update(delta[0], delta[1], tyle_board); //Move pacman by dx and dy along tyle_board
@@ -56,7 +65,11 @@ public class CharacterEventHandler {
 			cycleHandler();
 		}
 	}
-	
+	// *********************************************************************************//
+	// *********************************************************************************//
+	// HELPER FUNCTIONS FOR postKeyPressEventHandler()
+	// *********************************************************************************//
+	// Increment cycle_frame and reset it to 0 if it is equal to frames_per_cycle.
 	public void cycleHandler() {
 		cycle_frame++;
 		if (cycle_frame == frames_per_cycle)
@@ -67,7 +80,7 @@ public class CharacterEventHandler {
 		ghost.setSpeed();
 		ghost.setImage();
 		ghost.updateImage();
-		ghost.stateHandler(dotstate);
+		ghost.stateHandler(power_up);
 	}
 	
 	private void pacmanHandler() {
@@ -103,7 +116,7 @@ public class CharacterEventHandler {
 	}
 	
 	private void doCollisionEvents(Ghost ghost) {
-		if (ghost.checkCollision(dotstate, pacman)) {
+		if (ghost.checkCollision(power_up, pacman)) {
 			global_dot_counter = true;
 			global_dots_captured = 0;
 			pacman.resetPacMan();

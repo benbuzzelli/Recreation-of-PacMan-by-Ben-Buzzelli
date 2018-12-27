@@ -4,8 +4,8 @@ import pacMan.TyleContainer.Tyle;
 
 public class Blinky extends Ghost {
 
-	public Blinky(int x, int y, Tyle[][] tyle_board) {
-		super(GhostName.BLINKY, State.DEFAULT, x, y, tyle_board, TargetingState.ATTACK, 0);
+	public Blinky(Tyle[][] tyle_board) {
+		super(GhostName.BLINKY, State.DEFAULT, tyle_board, TargetingState.ATTACK, 0);
 	}
 	
 	public int[] getTarget(PacMan pacman) {

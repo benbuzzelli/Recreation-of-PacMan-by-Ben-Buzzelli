@@ -24,7 +24,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	public static Scanner in = new Scanner(System.in);
 	public static final int dimension = 16;
 
-	private PacMan pacman = new PacMan(240, 384);
+	private PacMan pacman;
 	private Ghost[] ghosts = new Ghost[4];
 	
 	private JFrame frame = new JFrame();
@@ -145,15 +145,16 @@ public class PacManBoard extends JPanel implements KeyListener {
 	}
 	
 	private void setGhosts(Tyle[][] tyleBoard) {
-		ghosts[0] = new Blinky(248, 192, tyleBoard);
-		ghosts[1] = new Pinky(248, 248, tyleBoard);
-		ghosts[2] = new Inky(216, 232, tyleBoard);
-		ghosts[3] = new Clyde(280, 232, tyleBoard);
+		ghosts[0] = new Blinky(tyleBoard);
+		ghosts[1] = new Pinky(tyleBoard);
+		ghosts[2] = new Inky(tyleBoard);
+		ghosts[3] = new Clyde(tyleBoard);
 	}
 
 	public void startGame() throws FileNotFoundException {
 		createBoard();
 		setTyleBoard(board.size(), board.get(0).length());
+		pacman = new PacMan(tyle_board);
 		getPowerUpLocations(board.size(), board.get(0).length());
 		setGhosts(tyle_board);
 		setFrame(frame);

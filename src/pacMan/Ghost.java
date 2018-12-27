@@ -50,24 +50,26 @@ public abstract class Ghost {
 		INKY(new String[][] { { "images/inky_up.png", "images/inky_up1.png" },
 				{ "images/inky_down.png", "images/inky_down1.png" },
 				{ "images/inky_left.png", "images/inky_left1.png" },
-				{ "images/inky_right.png", "images/inky_right1.png" } }),
+				{ "images/inky_right.png", "images/inky_right1.png" } }, 'I'),
 		BLINKY(new String[][] { { "images/blinky_up.png", "images/blinky_up1.png" },
 				{ "images/blinky_down.png", "images/blinky_down1.png" },
 				{ "images/blinky_left.png", "images/blinky_left1.png" },
-				{ "images/blinky_right.png", "images/blinky_right1.png" } }),
+				{ "images/blinky_right.png", "images/blinky_right1.png" } }, 'L'),
 		PINKY(new String[][] { { "images/pinky_up.png", "images/pinky_up1.png" },
 				{ "images/pinky_down.png", "images/pinky_down1.png" },
 				{ "images/pinky_left.png", "images/pinky_left1.png" },
-				{ "images/pinky_right.png", "images/pinky_right1.png" } }),
+				{ "images/pinky_right.png", "images/pinky_right1.png" } }, 'P'),
 		CLYDE(new String[][] { { "images/clyde_up.png", "images/clyde_up1.png" },
 				{ "images/clyde_down.png", "images/clyde_down1.png" },
 				{ "images/clyde_left.png", "images/clyde_left1.png" },
-				{ "images/clyde_right.png", "images/clyde_right1.png" } });
+				{ "images/clyde_right.png", "images/clyde_right1.png" } }, 'C');
 
 		public String[][] filename;
+		public char spawn_char;
 
-		GhostName(String[][] filename) {
+		GhostName(String[][] filename, char spawn_char) {
 			this.filename = filename;
+			this.spawn_char = spawn_char;
 		}
 	}
 
@@ -126,6 +128,8 @@ public abstract class Ghost {
 	// *********************************************************************************//
 	// VARIABLES ASSOCIATED WITH MOVEMENT
 	// *********************************************************************************//
+	public int spawnX;
+	public int spawnY;
 	private int x;
 	private int y;
 	private int curDeltaX = 0;
@@ -149,15 +153,17 @@ public abstract class Ghost {
 
 	// This constructor is used to initialize variables that are certain or known on
 	// the start of each game.
-	public Ghost(GhostName ghost, State state, int x, int y, Tyle[][] tyle_board, TargetingState targeting_state,
+	public Ghost(GhostName ghost, State state, Tyle[][] tyle_board, TargetingState targeting_state,
 			int dot_trigger_count) {
 		this.ghost = ghost;
 		this.state = state;
-		this.x = x;
-		this.y = y;
 		this.tyle_board = tyle_board;
 		this.targeting_state = targeting_state;
 		this.dot_trigger_count = dot_trigger_count;
+		setSpawnLocation();
+		
+		this.x = spawnX;
+		this.y = spawnY;
 	}
 
 	// Each ghost has a different way of choosing their targets for each state.
@@ -181,6 +187,20 @@ public abstract class Ghost {
 	// Initialize the starting image of a ghost.
 	public void setImage() {
 		character = Toolkit.getDefaultToolkit().getImage(ghost.filename[0][0]);
+	}
+	
+	public void setSpawnLocation() {
+		int rows = tyle_board.length;
+		int columns = tyle_board[0].length;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				if (tyle_board[i][j].c == ghost.spawn_char) {
+					spawnX = j * PacManBoard.dimension + PacManBoard.dimension / 2;
+					spawnY = i * PacManBoard.dimension;
+				}
+			}
+		}
+		
 	}
 
 	// Update a ghost's image based on which State its in.
@@ -357,7 +377,7 @@ public abstract class Ghost {
 		}
 	}
 
-	public void stateHandler(DotState dotstate) {
+	public void stateHandler(PowerUp power_up) {
 
 		if (target_clock == 1200)
 			target_clock = 0;
@@ -369,17 +389,17 @@ public abstract class Ghost {
 
 		target_clock++;
 
-		if (dotstate.blueTimer == 0) {
-			if (dotstate.getState() != DotState.State.OFF && !dotstate.blinking)
+		if (power_up.blueTimer == 0) {
+			if (power_up.getState() != PowerUp.State.OFF && !power_up.blinking)
 				state = State.BLUE;
-		} else if (state == State.BLUE && dotstate.getState() != DotState.State.OFF && dotstate.blinking == true
+		} else if (state == State.BLUE && power_up.getState() != PowerUp.State.OFF && power_up.blinking == true
 				&& state != State.HEAD_HOME)
 			state = State.BLINKING;
-		if (dotstate.getState() == DotState.State.OFF && state != State.HEAD_HOME)
+		if (power_up.getState() == PowerUp.State.OFF && state != State.HEAD_HOME)
 			state = State.DEFAULT;
 	}
 
-	public boolean checkCollision(DotState dotstate, PacMan pacman) {
+	public boolean checkCollision(PowerUp power_up, PacMan pacman) {
 		int x = pacman.getX();
 		int y = pacman.getY();
 
@@ -388,7 +408,7 @@ public abstract class Ghost {
 			if (state != State.DEFAULT && state != State.HEAD_HOME) {
 				state = State.HEAD_HOME;
 				targeting_state = TargetingState.GO_HOME;
-				dotstate.decrementGhosts();
+				power_up.decrementGhosts();
 				back_tracking = true;
 			} else if (state != State.HEAD_HOME) {
 				return true;
