@@ -2,6 +2,7 @@ package pacMan;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.Timer;
 
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
@@ -45,6 +46,9 @@ public class PacMan {
 	private int start_count = 0;
 	private int speed_percent = 80;
 	
+	private boolean timerIsRunning = false;
+	private Timer timer = new Timer();
+	
 	public PacMan(Tyle[][] tyle_board) {
 		this.tyle_board = tyle_board;
 		setSpawnLocation();
@@ -66,11 +70,12 @@ public class PacMan {
 		
 	}
 
-	public void resetPacMan() {
+	public void resetPacMan(DotTimer dotTimer) {
 		start_count = 0;
 		speed_percent = 80;
 		resetX(240);
 		resetY(384);
+		updateTimer(dotTimer);
 	}
 	
 	public void pacmanStart() {
@@ -95,9 +100,25 @@ public class PacMan {
 			speed_percent = 80;
 	}
 
-	public void updateDots(Tyle[][] tyle_board) {
-		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT)
+	public void updateDots(Tyle[][] tyle_board, DotTimer dotTimer) {
+		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT){
+			//Cancel current schedule and reset, then change dot image to a black square
+			updateTimer(dotTimer);
 			tyle_board[y / dimension][x / dimension] = Tyle.BLACK_SQUARE;
+		}
+			
+	}
+	
+	public void updateTimer(DotTimer dotTimer){
+		if(timerIsRunning){
+			timer.cancel();
+			timer = new Timer();
+			timer.schedule(dotTimer, 4000);
+		}else{
+			timerIsRunning = true;
+			timer = new Timer();
+			timer.schedule(dotTimer, 4000);
+		}
 	}
 
 	public void teleport(Tyle type, Tyle[][] tyle_board) {

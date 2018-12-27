@@ -3,7 +3,7 @@ package pacMan;
 import pacMan.TyleContainer.Tyle;
 
 public class Inky extends Ghost {
-
+	
 	public Inky(Tyle[][] tyle_board) {
 		super(GhostName.INKY, State.DEFAULT, tyle_board, TargetingState.ATTACK, 30);
 	}

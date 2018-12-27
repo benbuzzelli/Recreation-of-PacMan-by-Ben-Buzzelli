@@ -20,6 +20,8 @@ public class CharacterEventHandler {
 	
 	private int global_dots_captured = 0;
 	private boolean global_dot_counter;
+
+	
 	private int[] globat_dot_limit = {0, 7, 17, 32};
 	
 	private Tyle[][] tyle_board;
@@ -86,10 +88,13 @@ public class CharacterEventHandler {
 	private void pacmanHandler() {
 		pacman.updateImage();
 		pacman.setSpeed(tyle_board);
-		pacman.updateDots(tyle_board);
+		
 	}
 	
 	private void ghostHandler() {
+		DotTimer dotTimer = new DotTimer(ghosts,pacman);
+		pacman.updateDots(tyle_board,dotTimer);
+		
 		for (int i = 0; i < 4; i++) {
 			Ghost ghost = ghosts[i];
 			setGhostData(ghost);
@@ -119,7 +124,7 @@ public class CharacterEventHandler {
 		if (ghost.checkCollision(power_up, pacman)) {
 			global_dot_counter = true;
 			global_dots_captured = 0;
-			pacman.resetPacMan();
+			pacman.resetPacMan(new DotTimer(ghosts, pacman));
 			for (int j = 0; j < 4; j++) {
 				ghosts[j].resetGhost();
 			}
