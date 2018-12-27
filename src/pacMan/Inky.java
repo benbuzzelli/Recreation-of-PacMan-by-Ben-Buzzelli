@@ -36,9 +36,9 @@ public class Inky extends Ghost {
 	public void ghostStart(boolean global_counter) {
 		if (getHomeState() == HomeState.IS_HOME) {
 			updateSpeed(getSpeed());
-			if (getY() == 16 * getDimension() - getDimension() / 2)
+			if (getY() == 16 * PacManBoard.dimension - PacManBoard.dimension / 2)
 				updateDeltaY(-1);
-			else if (getY() == 14 * getDimension() + getDimension() / 2) {
+			else if (getY() == 14 * PacManBoard.dimension + PacManBoard.dimension / 2) {
 				updateDeltaY(1);
 			}
 			updateX(getDeltaX());
@@ -54,10 +54,10 @@ public class Inky extends Ghost {
 	
 	public void ghostStartExit() {
 		updateSpeed(1);
-		if (getX() != 15 * getDimension() + getDimension() / 2) {
+		if (getX() != 15 * PacManBoard.dimension + PacManBoard.dimension / 2) {
 			updateDeltaX(1);
 			updateDeltaY(0);
-		} else if (getY() != 12 * getDimension()) {
+		} else if (getY() != 12 * PacManBoard.dimension) {
 			updateDeltaX(0);
 			updateDeltaY(-1);
 		} else {
