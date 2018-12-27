@@ -590,10 +590,11 @@ public abstract class Ghost {
 	}
 
 	public void incrementDotsCaptured(PacMan pacman) {
-		if (dot_counter_state == DotCounterState.ACTIVE) {
+		if (dot_counter_state == DotCounterState.ACTIVE) {			
 			if (tyle_board[pacman.getY() / PacManBoard.dimension][pacman.getX()
 					/ PacManBoard.dimension].type == TyleType.DOT) {
 				dots_captured++;
+				System.out.println("Dots captured: " + dots_captured);
 			}
 		}
 	}

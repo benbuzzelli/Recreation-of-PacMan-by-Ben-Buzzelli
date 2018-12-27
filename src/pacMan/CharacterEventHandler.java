@@ -92,6 +92,13 @@ public class CharacterEventHandler {
 	}
 	
 	private void ghostHandler() {
+		if (!global_dot_counter) {
+			incrementGhostDotCount();
+		}
+		else {
+			globalCounterHandler();
+		}
+		
 		DotTimer dotTimer = new DotTimer(ghosts,pacman);
 		pacman.updateDots(tyle_board,dotTimer);
 		
@@ -107,17 +114,10 @@ public class CharacterEventHandler {
 				if (ghost.getHomeState() == HomeState.HAS_EXITED)
 					ghost.makeMove(pacman);
 			}
-			
 			doCollisionEvents(ghost);
-			
 		}
 		
-		if (!global_dot_counter) {
-			incrementGhostDotCount();
-		}
-		else {
-			globalCounterHandler();
-		}
+		
 	}
 	
 	private void doCollisionEvents(Ghost ghost) {
