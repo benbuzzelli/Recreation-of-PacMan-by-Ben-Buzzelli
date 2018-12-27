@@ -14,9 +14,9 @@ import pacMan.TyleContainer.TyleType;
  */
 public abstract class Ghost {
 
-	//*********************************************************************************//
-	//								ENUM DECLARATION 		
-	//*********************************************************************************//
+	// *********************************************************************************//
+	// ENUM DECLARATION
+	// *********************************************************************************//
 	// HomeState lets other classes know when a particular ghost has left its spawn
 	// location or is leaving. This is necessary for the program to know when the
 	// ghost can begin using its normal method for finding and making its next move.
@@ -70,14 +70,14 @@ public abstract class Ghost {
 			this.filename = filename;
 		}
 	}
-	
+
 	// Creates a new Tyle[][] to be initialized by this class's constructor.
 	private Tyle[][] tyle_board;
 
-	//*********************************************************************************//
-	//*********************************************************************************//
-	//					VARIABLES ASSOCIATED WITH IMAGES OR GRAPHICS 		
-	//*********************************************************************************//
+	// *********************************************************************************//
+	// *********************************************************************************//
+	// VARIABLES ASSOCIATED WITH IMAGES OR GRAPHICS
+	// *********************************************************************************//
 	// Eyes and blink store the graphics to be painted when a ghost is not in its
 	// default state.
 	private String[] eyes = { "images/eyes_up.png", "images/eyes_down.png", "images/eyes_left.png",
@@ -92,10 +92,10 @@ public abstract class Ghost {
 	// Also creates a new Animator for the ghosts, to be used in their blue state.
 	private Animator[] animator = { new Animator(), new Animator(), new Animator(), new Animator() };
 	private Animator blue_animator = new Animator();
-	//*********************************************************************************//
-	//*********************************************************************************//
-	//									ENUM VARIABLES 		
-	//*********************************************************************************//
+	// *********************************************************************************//
+	// *********************************************************************************//
+	// ENUM VARIABLES
+	// *********************************************************************************//
 
 	// Create each enum variables and initialize dot_counter_state and home_state
 	// because these states are shared between each ghost upon starting a new game
@@ -105,10 +105,10 @@ public abstract class Ghost {
 	private TargetingState targeting_state;
 	private State state;
 	private GhostName ghost;
-	/***********************************************************************************/
-	/***********************************************************************************/
-	//							STATE DETERMINATION VARIABLES		
-	/***********************************************************************************/
+	// *********************************************************************************//
+	// *********************************************************************************//
+	// STATE DETERMINATION VARIABLES
+	// *********************************************************************************//
 
 	// This boolean variable indicates when a ghost has changed a certain state. //
 	// This is necessary to allow for ghost's anti-backtracking movement to // be
@@ -122,10 +122,10 @@ public abstract class Ghost {
 	// to leave its spawn location.
 	private int dot_trigger_count;
 	private int dots_captured = 0;
-	/***********************************************************************************/
-	/***********************************************************************************/
-	//						VARIABLES ASSOCIATED WITH MOVEMENT 		
-	/***********************************************************************************/
+	// *********************************************************************************//
+	// *********************************************************************************//
+	// VARIABLES ASSOCIATED WITH MOVEMENT
+	// *********************************************************************************//
 	private int x;
 	private int y;
 	private int curDeltaX = 0;
@@ -133,7 +133,7 @@ public abstract class Ghost {
 	private int speed = 2;
 	private int speed_percent = 75;
 	private int start_count = 0;
-	
+
 	// These integer arrays store the target for a ghost to reach in each targeting
 	// state.
 	private int[] attack_target = new int[2];
@@ -160,18 +160,30 @@ public abstract class Ghost {
 		this.dot_trigger_count = dot_trigger_count;
 	}
 
+	// Each ghost has a different way of choosing their targets for each state.
+	// These need to be abstract because no ghosts share the same targeting logic.
 	public abstract void updateAttackTarget(PacMan pacman);
+
 	public abstract void updateScatterTarget();
+
 	public abstract void setHomeTarget();
 
+	// This will reset a ghost to its unique spawn location. It will also reset
+	// any variables that have changed and need to be initialized.
 	public abstract void resetGhost();
+
+	// ghostStart and ghostStartExit contain the unique routines for each
+	// ghost to follow when a game is started or a life is lost.
 	public abstract void ghostStart(boolean global_counter);
+
 	public abstract void ghostStartExit();
 
+	// Initialize the starting image of a ghost.
 	public void setImage() {
 		character = Toolkit.getDefaultToolkit().getImage(ghost.filename[0][0]);
 	}
 
+	// Update a ghost's image based on which State its in.
 	public void updateImage() {
 
 		if (getState() == State.DEFAULT) {
@@ -179,116 +191,145 @@ public abstract class Ghost {
 		} else if (getState() == State.HEAD_HOME) {
 			rotateEyes();
 		} else {
-			blueTimer();
+			rotateBlue();
 		}
 
 	}
 
+	// There are three conditions that effect a ghost's speed during a level.
+	// These are:
+	// 1. After a ghost has been eaten by PacMan when PacMan is powered up.
+	// 2. When a ghost transitions back into its default state.
+	// 3. If a ghost is traveling through a teleport path.
+	public void setSpeed() {
+		if (getState() == State.HEAD_HOME) {
+			speed_percent = 75; // Set speed_percent to 75 after a ghost has been eaten.
+			if (x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0)
+				speed = 4; // Also set speed to 4.
+		} else if (getState() != State.DEFAULT) {
+			speed_percent = 50; // Set speed_percent to 50 if a ghost is blue.
+			speed = 2;
+		} else {
+			if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension] == Tyle.TELEPORT_PATH)
+				speed_percent = 50; // Set speed_percent to 50 when a ghost is traveling on a TELEPORT_PATH.
+			else
+				speed_percent = 75; // Set speed_percent to 75 when a ghost is in its Default state.
+			speed = 2;
+		}
+	}
+
+	// Method for making a ghost's move and updating its position based on its
+	// target square.
 	public void makeMove(PacMan pacman) {
 		if (x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0) {
 			int[] target = new int[2];
 
-			updateAttackTarget(pacman);
-			updateScatterTarget();
+			updateAttackTarget(pacman); // Update this each time makeMove is called
+			updateScatterTarget(); // Update this each time makeMove is called
 
 			if (targeting_state == TargetingState.ATTACK) {
-				target = attack_target;
+				target = attack_target; // Set the ghost's target equal to attack target when in its attack state.
 			} else if (targeting_state == TargetingState.SCATTER) {
-				target = scatter_target;
+				target = scatter_target; // Set the ghost's target equal to its appropriate state.
 			} else if (targeting_state == TargetingState.GO_HOME) {
 				target = home_target;
-				goHome(target);
-				updateX(getDeltaX());
+				goHome(target); // Call goHome method during a Ghost's GO_HOME state because there are more
+								// specific instructions.
+				updateX(getDeltaX()); // Update x and y for each move.
 				updateY(getDeltaY());
-				return;
+				return; // Return to skip the next instructions.
 			}
 
-			getGhostMove(target[0], target[1]);
+			getGhostMove(target[0], target[1]); // Call getGhostMove which will set curDeltaX and curDeltaY to their
+												// appropriate values.
 		}
 
-		updateX(getDeltaX());
+		updateX(getDeltaX()); // Update x and y for each move.
 		updateY(getDeltaY());
 	}
 
-	public void setSpeed() {
-		if (getState() == State.HEAD_HOME) {
-			speed_percent = 75;
-			if (x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0)
-				speed = 4;
-		} else if (getState() != State.DEFAULT) {
-			speed_percent = 50;
-			speed = 2;
-		} else {
-			if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension] == Tyle.TELEPORT_PATH)
-				speed_percent = 50;
-			else
-				speed_percent = 75;
-			speed = 2;
-		}
-	}
-
-	public void getGhostMove(int newX, int newY) {
+	// This method takes in a dx and dy and updates a ghost's curdelta values.
+	public void getGhostMove(int targetX, int targetY) {
 		if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension].type == TyleType.TELEPORT) {
-			teleport(tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension]);
+			teleport(tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension]); // Call this if a Ghost is on a
+																						// TELEPORT square.
 		}
 
-		List<int[]> move = new ArrayList<int[]>();
-		int[][] delta = { { 0, -1 }, { -1, 0 }, { 0, 1 }, { 1, 0 } };
+		List<int[]> move = new ArrayList<int[]>(); // Create an list to store the possible moves a ghost could make.
+		int[][] delta = { { 0, -1 }, { -1, 0 }, { 0, 1 }, { 1, 0 } }; // These are the four delta values in ordered this
+																		// way for desired preference of selection.
 
 		for (int i = 0; i < 4; i++) {
-			if (isValid(delta[i][0], delta[i][1])) {
-				move.add(delta[i]);
+			if (isValid(delta[i][0], delta[i][1])) { // Call isValid to check is a move is valid.
+				move.add(delta[i]); // Add a move to the list if it is valid.
 			}
 		}
 
-		int[] chosen_move = findClosestMove(newX, newY, move);
+		int[] chosen_move = findClosestMove(targetX, targetY, move); // Call findClosestMove to get the desired move.
 		updateSpeed(speed);
 
-		updateDeltaX(chosen_move[0]);
+		updateDeltaX(chosen_move[0]); // Update each delta with the new move.
 		updateDeltaY(chosen_move[1]);
 
 	}
 
-	private int[] findClosestMove(int newX, int newY, List<int[]> move) {
-		double distance = 100000;
+	// This method takes in a target x and y and a moves list, and returns the move
+	// which will put the ghost closest to its target.
+	private int[] findClosestMove(int targetX, int targetY, List<int[]> move) {
+		double distance = 100000; // Set distance to an unreachable, high value.
 
 		for (int i = 0; i < move.size(); i++) {
-			double tempDistance = getDistance(newX, newY, move.get(i));
+			double tempDistance = getDistance(targetX, targetY, move.get(i)); // Use getDistance to find move's diagonal
+																				// distance to its target.
 			if (tempDistance < distance)
-				distance = tempDistance;
+				distance = tempDistance; // Set distance equal to the new tempDistance if tempDistance is less than
+											// distance.
 		}
 
 		for (int i = 0; i < move.size(); i++) {
-			if (getDistance(newX, newY, move.get(i)) > distance)
-				move.remove(i);
+			if (getDistance(targetX, targetY, move.get(i)) > distance)
+				move.remove(i); // Remove any moves that result in a greater distance than the shortest
+								// distance.
 		}
 
 		return move.get(0);
 	}
 
-	private double getDistance(int newX, int newY, int[] move) {
+	// Returns a double, representing the diagonal distance between two points.
+	private double getDistance(int targetX, int targetY, int[] move) {
 
-		int row1 = y + move[1] * PacManBoard.dimension, row2 = newY;
-		int col1 = x + move[0] * PacManBoard.dimension, col2 = newX;
+		// Set row and column values by adding delta number of dimension to a ghosts
+		// current location.
+		int newY = y + move[1] * PacManBoard.dimension, newX = x + move[0] * PacManBoard.dimension;
 
-		double distance = Math.sqrt((row2 - row1) * (row2 - row1) + (col2 - col1) * (col2 - col1));
+		// Use Pathagorean's theorem to get the diagonal distance between the two points.
+		double distance = Math.sqrt((targetY - newY) * (targetY - newY) + (targetX - newX) * (targetX - newX));
+		
 		return distance;
 	}
 
 	public boolean isValid(int dx, int dy) {
+		// Check if a new dx and dy will cause a ghost to turn around and return false if this is the case.
+		// Do not return false however, if back_tracking is true.
 		if (back_tracking == false && (dx != 0 && dx == getDeltaX() * -1) || (dy != 0 && dy == getDeltaY() * -1)) {
 			return false;
 		}
 		back_tracking = false;
+		
+		// Get the new column and row using the input delta values.
 		int column = getX() / PacManBoard.dimension + dx, row = getY() / PacManBoard.dimension + dy;
 
+		// Return false if a ghost would end up on a WALL or UNREACHABLE tyle
 		if (tyle_board[row][column].type == TyleType.UNREACHABLE || tyle_board[row][column].type == TyleType.WALL)
 			return false;
+		// Return false if a ghost would travel down onto a GHOSTGATE tyle. A ghost without a density of 1
+		// may do this though.
 		if (tyle_board[row][column].type == TyleType.GHOSTGATE && dy == 1 && density == 1)
 			return false;
+		// Return false if a ghost would travel up through a DOWN_ONLY_SQUARE, unless density is not 1.
 		if (tyle_board[row][column] == Tyle.DOWN_ONLY_SQUARE && dy == -1 && density == 1)
 			return false;
-		return true;
+		return true; // If not illegal conditions have been met, then this move is acceptable.
 	}
 
 	public void teleport(Tyle type) {
@@ -342,7 +383,7 @@ public abstract class Ghost {
 		int x = pacman.getX();
 		int y = pacman.getY();
 
-		if (density == 1 && this.x / PacManBoard.dimension == x / PacManBoard.dimension 
+		if (density == 1 && this.x / PacManBoard.dimension == x / PacManBoard.dimension
 				&& this.y / PacManBoard.dimension == y / PacManBoard.dimension) {
 			if (state != State.DEFAULT && state != State.HEAD_HOME) {
 				state = State.HEAD_HOME;
@@ -368,7 +409,7 @@ public abstract class Ghost {
 		}
 	}
 
-	public void blueTimer() {
+	public void rotateBlue() {
 		if (state == State.BLINKING) {
 			character = blue_animator.generateAnimation(12, blink);
 		} else {
@@ -394,10 +435,6 @@ public abstract class Ghost {
 				character = Toolkit.getDefaultToolkit().getImage(eyes[i]);
 			}
 		}
-	}
-
-	public void rotate() {
-
 	}
 
 	public void updateDeltaX(int deltaX) {
