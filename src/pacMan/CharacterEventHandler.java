@@ -4,6 +4,7 @@ import pacMan.Ghost.HomeState;
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
 
+
 public class CharacterEventHandler {
 
 	private int cycle_frame = 0;
@@ -26,7 +27,7 @@ public class CharacterEventHandler {
 		this.dotstate = new DotState(pacman, DotState.State.OFF, tyle_board);
 		this.tyle_board = tyle_board;
 	}
-	
+
 	public void setCharacters() {
 		for (int i = 0; i < 4; i++) {
 			Ghost ghost = ghosts[i];
@@ -36,6 +37,10 @@ public class CharacterEventHandler {
 		pacman.updateImage();
 	}
 	
+	/**
+	 * Run in the startGame() in a continuous while-loop. Works by updating image of pacMan based on his state and updating each of the ghosts individually
+	 * @param delta Array of length 2, with x and y deltas for PacMan to move. PacMan will move by x=speed*delta[0] and by y=speed*delta[1]
+	 */
 	public void postKeyPressEventHandler(int[] delta) {
 		pacmanHandler();
 		
@@ -43,7 +48,7 @@ public class CharacterEventHandler {
 		dotstate.powerupHandler(pacman);
 		
 		if (isNotStalled(pacman.getSpeedPercent())) {
-			pacman.update(delta[0], delta[1], tyle_board);
+			pacman.update(delta[0], delta[1], tyle_board); //Move pacman by dx and dy along tyle_board
 		}
 		
 		if (pacman.getDeltaX() != 0 || pacman.getDeltaY() != 0) {		
@@ -83,7 +88,6 @@ public class CharacterEventHandler {
 				setDotCounterStates(ghosts);
 				if (ghost.getHomeState() == HomeState.HAS_EXITED)
 					ghost.makeMove(pacman);
-				
 			}
 			
 			doCollisionEvents(ghost);

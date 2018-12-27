@@ -108,15 +108,19 @@ public abstract class Ghost {
 
 	public void updateImage() {
 
-		if (image_frame == 10)
+		if (image_frame == 10){
 			image_frame = 0;
-
-		if (getState() == State.DEFAULT)
+		}
+			
+		if (getState() == State.DEFAULT){
 			rotateCharacter();
-		else if (getState() == State.HEAD_HOME)
+		}
+		else if (getState() == State.HEAD_HOME){
 			rotateEyes();
-		else
-			rotateCharacterBlue();
+		}
+		else{
+			blueTimer();
+		}
 
 		image_frame++;
 	}
@@ -304,10 +308,6 @@ public abstract class Ghost {
 			targeting_state = TargetingState.ATTACK;
 			density = 1;
 		}
-	}
-
-	public void rotateCharacterBlue() {
-		blueTimer();
 	}
 
 	public void blueTimer() {

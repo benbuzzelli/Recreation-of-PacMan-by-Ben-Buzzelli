@@ -175,6 +175,7 @@ public class PacMan {
 		return true;
 	}
 
+	
 	public void updateDeltaX(int deltaX) {
 		curDeltaX = deltaX;
 	}
