@@ -17,12 +17,10 @@ public class DotTimer extends TimerTask{
 	}
 	
 	public void run(){
-		System.out.println("Timer expired");
 		for(int i =0; i < ghosts.length;i++){
 			if(ghosts[i].getHomeState() == Ghost.HomeState.IS_HOME){
 				ghosts[i].setHomeState(Ghost.HomeState.IS_EXITING);
 				ghosts[i].ghostStartExit();
-				//ghosts[i].setDotCounterState(Ghost.DotCounterState.INACTIVE);
 				pacman.updateTimer(new DotTimer(ghosts, pacman));
 				break;
 			}

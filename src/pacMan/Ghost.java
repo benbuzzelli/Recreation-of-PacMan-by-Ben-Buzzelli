@@ -658,7 +658,6 @@ public abstract class Ghost {
 			if (tyle_board[pacman.getY() / PacManBoard.dimension][pacman.getX()
 					/ PacManBoard.dimension].type == TyleType.DOT) {
 				dots_captured++;
-				System.out.println("Dots captured: " + dots_captured);
 			}
 		}
 	}
