@@ -4,13 +4,20 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
 
 
 public abstract class Ghost {
+	
+	public enum HomeState {
+		IS_HOME, HAS_EXITED, IS_EXITING
+	}
+	
+	public enum DotCounterState {
+		ACTIVE, INACTIVE
+	}
 
 	public enum TargetingState {
 		ATTACK, SCATTER, GO_HOME
@@ -38,13 +45,14 @@ public abstract class Ghost {
 	}
 
 
-	public Ghost(GhostName ghost, State state, int x, int y, Tyle[][] tyle_board, TargetingState targeting_state) {
+	public Ghost(GhostName ghost, State state, int x, int y, Tyle[][] tyle_board, TargetingState targeting_state, int dot_trigger_count) {
 		this.ghost = ghost;
 		this.state = state;
 		this.x = x;
 		this.y = y;
 		this.tyle_board = tyle_board;
 		this.targeting_state = targeting_state;
+		this.dot_trigger_count = dot_trigger_count;
 	}
 
 	private Tyle[][] tyle_board;
@@ -54,10 +62,16 @@ public abstract class Ghost {
 	private int x;
 	private int y;
 	private int target_clock = 0;
+	
+	private DotCounterState dot_counter_state = DotCounterState.INACTIVE;
+	private int dot_trigger_count;
+	private int dots_captured = 0;
+	
+	private HomeState home_state = HomeState.IS_HOME;
 
 	private int[] attack_target;
 	private int[] scatter_target;
-	private int[] home_target = new int[] {240, 244};
+	private int[] home_target = new int[] {240, 224};
 	
 	private int density = 1;
 
@@ -85,7 +99,8 @@ public abstract class Ghost {
 	
 	public abstract void resetGhost();
 
-	public abstract void ghostStart();
+	public abstract void ghostStart(boolean global_counter);
+	public abstract void ghostStartExit();
 
 	public void setImage() {
 		character = Toolkit.getDefaultToolkit().getImage(ghost.filename[0][0]);
@@ -112,43 +127,29 @@ public abstract class Ghost {
 	
 	
 	public void makeMove(PacMan pacman) {
-		int[] target = new int[2];
-		
-		updateAttackTarget(pacman);
-		
-		if (targeting_state == TargetingState.ATTACK) {
-			target = attack_target;
-		} else if (targeting_state == TargetingState.SCATTER) {
-			target = scatter_target;
-		} else if (targeting_state == TargetingState.GO_HOME) {
-			target = home_target;
-			goHome(target);
-			updateX(getDeltaX());
-			updateY(getDeltaY());
-			return;
-		}
-		
-		getGhostMove(target[0], target[1]);
-		updateX(getDeltaX());
-		updateY(getDeltaY());
-	}
-
-	public void updateMove(int newX, int newY) {
-		if (target_clock == 1200)
-			target_clock = 0;
-		if (state != State.HEAD_HOME) {
-			if (x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0) {
-				// if (target_clock / 600 == 0)
-					getGhostMove(newX, newY);
-				// else
-					// getGhostMove(newX, newY);
+		if (x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0) {
+			int[] target = new int[2];
+						
+			updateAttackTarget(pacman);
+			updateScatterTarget();
+			
+			if (targeting_state == TargetingState.ATTACK) {
+				target = attack_target;
+			} else if (targeting_state == TargetingState.SCATTER) {
+				target = scatter_target;
+			} else if (targeting_state == TargetingState.GO_HOME) {
+				target = home_target;
+				goHome(target);
+				updateX(getDeltaX());
+				updateY(getDeltaY());
+				return;
 			}
-		} else {
-			goHome(new int[] {240, 224});
+			
+			getGhostMove(target[0], target[1]);
 		}
+		
 		updateX(getDeltaX());
 		updateY(getDeltaY());
-		target_clock++;
 	}
 
 	public void setSpeed() {
@@ -221,9 +222,7 @@ public abstract class Ghost {
 			return false;
 		}
 		int column = getX() / getDimension() + dx, row = getY() / getDimension() + dy;
-		// int num_columns = tyle_board[0].length, num_rows = tyle_board.length;
-		// if (column < 0 || column >= num_columns || row < 0 || row >= num_rows)
-			// return false;
+
 		if (tyle_board[row][column].type == TyleType.UNREACHABLE || tyle_board[row][column].type == TyleType.WALL)
 			return false;
 		if (tyle_board[row][column].type == TyleType.GHOSTGATE && dy == 1 && density == 1)
@@ -259,6 +258,17 @@ public abstract class Ghost {
 	}
 
 	public void stateHandler(DotState dotstate) {
+		
+		if (target_clock == 1200)
+			target_clock = 0;
+		
+		if (target_clock / 600 == 0 && targeting_state != TargetingState.GO_HOME)
+			targeting_state = TargetingState.ATTACK;
+		else if (target_clock / 600 == 1 && targeting_state != TargetingState.GO_HOME)
+			targeting_state = TargetingState.SCATTER;
+		
+		target_clock++;
+		
 		if (dotstate.blueTimer == 0) {
 			if (dotstate.getState() != DotState.State.OFF && !dotstate.blinking)
 				state = State.BLUE;
@@ -416,6 +426,10 @@ public abstract class Ghost {
 		return speed_percent;
 	}
 	
+	public void updateSpeedPercent(int percent) {
+		speed_percent = percent;
+	}
+	
 	public Tyle[][] getTyleBoard() {
 		return tyle_board;
 	}
@@ -434,6 +448,46 @@ public abstract class Ghost {
 	
 	public void setHomeTarget(int[] target) {
 		home_target = target;
+	}
+	
+	public void setDotCounterState(DotCounterState state) {
+		this.dot_counter_state = state;
+	}
+	
+	public DotCounterState getDotCounterState() {
+		return dot_counter_state;
+	}
+	
+	public void setDotTriggerCount(int count) {
+		dot_trigger_count = count;
+	}
+	
+	public int getDotTriggerCount() {
+		return dot_trigger_count;
+	}
+	
+	public void setHomeState(HomeState home_state) {
+		this.home_state = home_state;
+	}
+	
+	public HomeState getHomeState() {
+		return home_state;
+	}
+	
+	public int getNumDotsCaptured() {
+		return dots_captured;
+	}
+	
+	public void incrementDotsCaptured(PacMan pacman) {
+		if (dot_counter_state == DotCounterState.ACTIVE) {
+			if (tyle_board[pacman.getY() / PacManBoard.dimension][pacman.getX() / PacManBoard.dimension].type == TyleType.DOT) {
+				dots_captured++;
+			}
+		}
+	}
+	
+	public void resetDotsCaptured() {
+		dots_captured = 0;
 	}
 
 }
