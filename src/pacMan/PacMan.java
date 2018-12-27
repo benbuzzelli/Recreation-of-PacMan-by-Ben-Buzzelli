@@ -73,9 +73,11 @@ public class PacMan {
 	public void resetPacMan(DotTimer dotTimer) {
 		start_count = 0;
 		speed_percent = 80;
-		resetX(240);
-		resetY(384);
+    
 		updateTimer(dotTimer);
+
+		resetX(spawnX);
+		resetY(spawnY);
 	}
 	
 	public void pacmanStart() {

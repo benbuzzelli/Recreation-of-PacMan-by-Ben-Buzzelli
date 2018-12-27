@@ -5,6 +5,8 @@ import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 
+import pacMan.Ghost.DotCounterState;
+import pacMan.Ghost.HomeState;
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
 
@@ -103,7 +105,7 @@ public abstract class Ghost {
 	// because these states are shared between each ghost upon starting a new game
 	// of PacMan.
 	private DotCounterState dot_counter_state = DotCounterState.INACTIVE;
-	private HomeState home_state = HomeState.IS_HOME;
+	private HomeState home_state;
 	private TargetingState targeting_state;
 	private State state;
 	private GhostName ghost;
@@ -128,8 +130,13 @@ public abstract class Ghost {
 	// *********************************************************************************//
 	// VARIABLES ASSOCIATED WITH MOVEMENT
 	// *********************************************************************************//
+	public char home_char = 'H';
 	public int spawnX;
 	public int spawnY;
+	
+	private int exitX;
+	private int exitY;
+	
 	private int x;
 	private int y;
 	private int curDeltaX = 0;
@@ -142,7 +149,7 @@ public abstract class Ghost {
 	// state.
 	private int[] attack_target = new int[2];
 	private int[] scatter_target = new int[2];
-	private int[] home_target = new int[] { 240, 224 };
+	private int[] home_target = new int[2];
 	/***********************************************************************************/
 	/***********************************************************************************/
 
@@ -154,14 +161,15 @@ public abstract class Ghost {
 	// This constructor is used to initialize variables that are certain or known on
 	// the start of each game.
 	public Ghost(GhostName ghost, State state, Tyle[][] tyle_board, TargetingState targeting_state,
-			int dot_trigger_count) {
+			HomeState home_state, int dot_trigger_count) {
 		this.ghost = ghost;
 		this.state = state;
 		this.tyle_board = tyle_board;
 		this.targeting_state = targeting_state;
+		this.home_state = home_state;
 		this.dot_trigger_count = dot_trigger_count;
 		setSpawnLocation();
-		
+
 		this.x = spawnX;
 		this.y = spawnY;
 	}
@@ -172,23 +180,15 @@ public abstract class Ghost {
 
 	public abstract void updateScatterTarget();
 
-	public abstract void setHomeTarget();
-
 	// This will reset a ghost to its unique spawn location. It will also reset
 	// any variables that have changed and need to be initialized.
 	public abstract void resetGhost();
-
-	// ghostStart and ghostStartExit contain the unique routines for each
-	// ghost to follow when a game is started or a life is lost.
-	public abstract void ghostStart(boolean global_counter);
-
-	public abstract void ghostStartExit();
 
 	// Initialize the starting image of a ghost.
 	public void setImage() {
 		character = Toolkit.getDefaultToolkit().getImage(ghost.filename[0][0]);
 	}
-	
+
 	public void setSpawnLocation() {
 		int rows = tyle_board.length;
 		int columns = tyle_board[0].length;
@@ -198,9 +198,17 @@ public abstract class Ghost {
 					spawnX = j * PacManBoard.dimension + PacManBoard.dimension / 2;
 					spawnY = i * PacManBoard.dimension;
 				}
+				if (tyle_board[i][j].c == home_char) {
+					home_target[0] = j * PacManBoard.dimension;
+					home_target[1] = i * PacManBoard.dimension;
+				}
+				if (tyle_board[i][j].c == 'L') {
+					exitX = j * PacManBoard.dimension + PacManBoard.dimension / 2;
+					exitY = i * PacManBoard.dimension;
+				}
 			}
 		}
-		
+
 	}
 
 	// Update a ghost's image based on which State its in.
@@ -238,6 +246,53 @@ public abstract class Ghost {
 		}
 	}
 
+	public void ghostStart(boolean global_counter) {
+		if (getHomeState() == HomeState.IS_HOME) {
+			updateSpeed(getSpeed());
+			if (ghost != GhostName.PINKY && getDeltaY() == 0) {
+				updateDeltaY(-1);
+			}
+			else if (ghost == GhostName.PINKY && getDeltaY() == 0)
+				updateDeltaY(1);
+			
+			if (getY() == spawnY + PacManBoard.dimension / 2)
+				updateDeltaY(-1);
+			else if (getY() == spawnY - PacManBoard.dimension / 2) {
+				updateDeltaY(1);
+			}
+			updateX(getDeltaX());
+			updateY(getDeltaY());
+			if (getNumDotsCaptured() >= getDotTriggerCount() && !global_counter) {
+				setDotCounterState(DotCounterState.INACTIVE);
+				setHomeState(HomeState.IS_EXITING);
+			}
+		} else if (getHomeState() == HomeState.IS_EXITING) {
+			ghostStartExit();
+		}
+	}
+
+	public void ghostStartExit() {
+		updateSpeed(1);
+		if (getX() != exitX) {
+			if (getX() < exitX)
+				updateDeltaX(1);
+			else
+				updateDeltaX(-1);
+			updateDeltaY(0);
+		} else if (getY() != exitY) {
+			updateDeltaX(0);
+			updateDeltaY(-1);
+		} else {
+			updateDeltaX(-1);
+			updateDeltaY(0);
+			setHomeState(HomeState.HAS_EXITED);
+			updateSpeed(2);
+			return;
+		}
+		updateX(getDeltaX());
+		updateY(getDeltaY());
+	}
+
 	// Method for making a ghost's move and updating its position based on its
 	// target square.
 	public void makeMove(PacMan pacman) {
@@ -270,10 +325,11 @@ public abstract class Ghost {
 
 	// This method takes in a dx and dy and updates a ghost's curdelta values.
 	public void getGhostMove(int targetX, int targetY) {
-		if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension].type == TyleType.TELEPORT) {
+		if (getTargetingState() == TargetingState.GO_HOME)
+			System.out.println(home_target[0] + " " + home_target[1]);
+		if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension].type == TyleType.TELEPORT)
 			teleport(tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension]); // Call this if a Ghost is on a
 																						// TELEPORT square.
-		}
 
 		List<int[]> move = new ArrayList<int[]>(); // Create an list to store the possible moves a ghost could make.
 		int[][] delta = { { 0, -1 }, { -1, 0 }, { 0, 1 }, { 1, 0 } }; // These are the four delta values in ordered this
@@ -322,31 +378,35 @@ public abstract class Ghost {
 		// current location.
 		int newY = y + move[1] * PacManBoard.dimension, newX = x + move[0] * PacManBoard.dimension;
 
-		// Use Pathagorean's theorem to get the diagonal distance between the two points.
+		// Use Pathagorean's theorem to get the diagonal distance between the two
+		// points.
 		double distance = Math.sqrt((targetY - newY) * (targetY - newY) + (targetX - newX) * (targetX - newX));
-		
+
 		return distance;
 	}
 
 	public boolean isValid(int dx, int dy) {
-		// Check if a new dx and dy will cause a ghost to turn around and return false if this is the case.
+		// Check if a new dx and dy will cause a ghost to turn around and return false
+		// if this is the case.
 		// Do not return false however, if back_tracking is true.
 		if (back_tracking == false && (dx != 0 && dx == getDeltaX() * -1) || (dy != 0 && dy == getDeltaY() * -1)) {
 			return false;
 		}
 		back_tracking = false;
-		
+
 		// Get the new column and row using the input delta values.
 		int column = getX() / PacManBoard.dimension + dx, row = getY() / PacManBoard.dimension + dy;
 
 		// Return false if a ghost would end up on a WALL or UNREACHABLE tyle
 		if (tyle_board[row][column].type == TyleType.UNREACHABLE || tyle_board[row][column].type == TyleType.WALL)
 			return false;
-		// Return false if a ghost would travel down onto a GHOSTGATE tyle. A ghost without a density of 1
+		// Return false if a ghost would travel down onto a GHOSTGATE tyle. A ghost
+		// without a density of 1
 		// may do this though.
 		if (tyle_board[row][column].type == TyleType.GHOSTGATE && dy == 1 && density == 1)
 			return false;
-		// Return false if a ghost would travel up through a DOWN_ONLY_SQUARE, unless density is not 1.
+		// Return false if a ghost would travel up through a DOWN_ONLY_SQUARE, unless
+		// density is not 1.
 		if (tyle_board[row][column] == Tyle.DOWN_ONLY_SQUARE && dy == -1 && density == 1)
 			return false;
 		return true; // If not illegal conditions have been met, then this move is acceptable.
@@ -422,7 +482,7 @@ public abstract class Ghost {
 			getGhostMove(target[0], target[1]);
 			density = 0;
 		}
-		if (x == 240 && y == 224) {
+		if (x == home_target[0] && y == home_target[1]) {
 			state = State.DEFAULT;
 			targeting_state = TargetingState.ATTACK;
 			density = 1;
@@ -567,6 +627,10 @@ public abstract class Ghost {
 
 	public DotCounterState getDotCounterState() {
 		return dot_counter_state;
+	}
+
+	public TargetingState getTargetingState() {
+		return targeting_state;
 	}
 
 	public void setDotTriggerCount(int count) {

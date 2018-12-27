@@ -144,10 +144,13 @@ public class CharacterEventHandler {
 			global_dots_captured++;
 		if (global_dots_captured >= globat_dot_limit[1] && ghosts[1].getHomeState() == HomeState.IS_HOME) {
 			ghosts[1].setHomeState(HomeState.IS_EXITING);
+			global_dots_captured = 0;
 		} else if (global_dots_captured >= globat_dot_limit[2] && ghosts[2].getHomeState() == HomeState.IS_HOME) {
 			ghosts[2].setHomeState(HomeState.IS_EXITING);
+			global_dots_captured = 0;
 		} else if (global_dots_captured >= globat_dot_limit[3] && ghosts[3].getHomeState() == HomeState.IS_HOME) {
 			ghosts[3].setHomeState(HomeState.IS_EXITING);
+			global_dots_captured = 0;
 		}
 	}
 	

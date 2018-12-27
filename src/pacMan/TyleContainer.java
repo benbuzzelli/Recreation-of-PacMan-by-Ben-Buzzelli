@@ -49,6 +49,8 @@ public class TyleContainer {
 		CLYDE_SPAWN_TYLE("images/black_ghost_square.png", 'C', TyleType.GHOSTSPACE),
 		PACMAN_SPAWN_TYLE("images/dot_square.png", 'N', TyleType.DOT),
 		
+		GHOST_HOME_TYLE("images/black_ghost_square.png", 'H', TyleType.GHOSTSPACE),
+		
 		DOWN_ONLY_SQUARE("images/black_square.png", '^', TyleType.EMPTY), DOT_SQUARE("images/dot_square.png", 'o', TyleType.DOT),
 		POWERUP_USED("images/black_square.png", '$', TyleType.EMPTY), POWERUP("images/powerup.png", '@', TyleType.POWERUP),
 		POWERUP_BLINKED("images/black_square.png", '!', TyleType.POWERUP),
