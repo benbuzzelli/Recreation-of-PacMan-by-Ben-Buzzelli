@@ -6,7 +6,7 @@ import java.util.List;
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
 
-public class DotState {
+public class PowerUp {
 
 	public enum State {
 		OFF(0), BLUE_200(200), BLUE_400(400), BLUE_800(800), BLUE_1600(1600);
@@ -18,7 +18,7 @@ public class DotState {
 		}
 	}
 	
-	public DotState(PacMan pacman, State state, Tyle[][] tyle_board) {
+	public PowerUp(PacMan pacman, State state, Tyle[][] tyle_board) {
 		this.state = state;
 		this.tyle_board = tyle_board;
 		this.pacman = pacman;

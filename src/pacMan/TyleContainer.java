@@ -41,6 +41,14 @@ public class TyleContainer {
 		TELEPORT_SQUARE_B("images/teleport_square.png", 'B', TyleType.TELEPORT),
 		TELEPORT_PATH("images/teleport_square.png", '?', TyleType.TELEPORT),
 		BLACK_GHOST_SQUARE("images/black_ghost_square.png", '_', TyleType.GHOSTSPACE),
+		
+		// Ghost spawn locations
+		INKY_SPAWN_TYLE("images/black_ghost_square.png", 'I', TyleType.GHOSTSPACE),
+		PINKY_SPAWN_TYLE("images/black_ghost_square.png", 'P', TyleType.GHOSTSPACE),
+		BLINKY_SPAWN_TYLE("images/black_square.png", 'L', TyleType.EMPTY),
+		CLYDE_SPAWN_TYLE("images/black_ghost_square.png", 'C', TyleType.GHOSTSPACE),
+		PACMAN_SPAWN_TYLE("images/dot_square.png", 'N', TyleType.DOT),
+		
 		DOWN_ONLY_SQUARE("images/black_square.png", '^', TyleType.EMPTY), DOT_SQUARE("images/dot_square.png", 'o', TyleType.DOT),
 		POWERUP_USED("images/black_square.png", '$', TyleType.EMPTY), POWERUP("images/powerup.png", '@', TyleType.POWERUP),
 		POWERUP_BLINKED("images/black_square.png", '!', TyleType.POWERUP),
