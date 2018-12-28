@@ -45,10 +45,7 @@ public class PacMan {
 	private int curSpeed = 0;
 	private int start_count = 0;
 	private int speed_percent = 80;
-	
-	private boolean timerIsRunning = false;
-	private Timer timer = new Timer();
-	
+		
 	public PacMan(Tyle[][] tyle_board) {
 		this.tyle_board = tyle_board;
 		setSpawnLocation();
@@ -70,12 +67,10 @@ public class PacMan {
 		
 	}
 
-	public void resetPacMan(DotTimer dotTimer) {
+	public void resetPacMan() {
 		start_count = 0;
 		speed_percent = 80;
     
-		updateTimer(dotTimer);
-
 		resetX(spawnX);
 		resetY(spawnY);
 	}
@@ -102,25 +97,12 @@ public class PacMan {
 			speed_percent = 80;
 	}
 
-	public void updateDots(Tyle[][] tyle_board, DotTimer dotTimer) {
+	public boolean updateDots(Tyle[][] tyle_board) {
 		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT){
-			//Cancel current schedule and reset, then change dot image to a black square
-			updateTimer(dotTimer);
 			tyle_board[y / dimension][x / dimension] = Tyle.BLACK_SQUARE;
+			return true;
 		}
-			
-	}
-	
-	public void updateTimer(DotTimer dotTimer){
-		if(timerIsRunning){
-			timer.cancel();
-			timer = new Timer();
-			timer.schedule(dotTimer, 4000);
-		}else{
-			timerIsRunning = true;
-			timer = new Timer();
-			timer.schedule(dotTimer, 4000);
-		}
+		return false;
 	}
 
 	public void teleport(Tyle type, Tyle[][] tyle_board) {

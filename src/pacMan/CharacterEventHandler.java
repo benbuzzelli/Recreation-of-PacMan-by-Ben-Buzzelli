@@ -1,6 +1,9 @@
 package pacMan;
+import java.util.Timer;
+
 import pacMan.Ghost.DotCounterState;
 import pacMan.Ghost.HomeState;
+import pacMan.Ghost.TargetingState;
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
 
@@ -20,8 +23,9 @@ public class CharacterEventHandler {
 	
 	private int global_dots_captured = 0;
 	private boolean global_dot_counter;
-
 	
+	private DotTimer dotTimer;
+		
 	private int[] globat_dot_limit = {0, 7, 17, 32};
 	
 	private Tyle[][] tyle_board;
@@ -33,7 +37,9 @@ public class CharacterEventHandler {
 		this.frames_per_cycle = frames_per_cycle;
 		this.pacman = pacman;
 		this.ghosts = ghosts;
-		this.power_up = new PowerUp(pacman, PowerUp.State.OFF, tyle_board);
+		this.dotTimer = new DotTimer(ghosts);
+		dotTimer.updateTimer();
+		this.power_up = new PowerUp(pacman, ghosts, PowerUp.State.OFF, tyle_board);
 		this.tyle_board = tyle_board;
 	}
 
@@ -82,13 +88,12 @@ public class CharacterEventHandler {
 		ghost.setSpeed();
 		ghost.setImage();
 		ghost.updateImage();
-		ghost.stateHandler(power_up);
+		ghost.stateHandler();
 	}
 	
 	private void pacmanHandler() {
 		pacman.updateImage();
 		pacman.setSpeed(tyle_board);
-		
 	}
 	
 	private void ghostHandler() {
@@ -99,8 +104,11 @@ public class CharacterEventHandler {
 			globalCounterHandler();
 		}
 		
-		DotTimer dotTimer = new DotTimer(ghosts,pacman);
-		pacman.updateDots(tyle_board,dotTimer);
+
+		if (pacman.updateDots(tyle_board)) {
+			dotTimer.cancelTimer();
+		}
+		dotTimer.restartTimer();
 		
 		for (int i = 0; i < 4; i++) {
 			Ghost ghost = ghosts[i];
@@ -111,8 +119,9 @@ public class CharacterEventHandler {
 			if (isNotStalled(ghost.getSpeedPercent())) {
 				ghost.ghostStart(global_dot_counter);
 				setDotCounterStates(ghosts);
-				if (ghost.getHomeState() == HomeState.HAS_EXITED)
+				if (ghost.getHomeState() == HomeState.HAS_EXITED) {
 					ghost.makeMove(pacman);
+				}
 			}
 			doCollisionEvents(ghost);
 		}
@@ -124,7 +133,10 @@ public class CharacterEventHandler {
 		if (ghost.checkCollision(power_up, pacman)) {
 			global_dot_counter = true;
 			global_dots_captured = 0;
-			pacman.resetPacMan(new DotTimer(ghosts, pacman));
+			pacman.resetPacMan();
+			
+			dotTimer.updateTimer();
+			
 			for (int j = 0; j < 4; j++) {
 				ghosts[j].resetGhost();
 			}
@@ -157,8 +169,9 @@ public class CharacterEventHandler {
 	public void setDotCounterStates(Ghost[] ghosts) {
 		for (int i = 0; i < ghosts.length - 1; i++) {
 			if (ghosts[i].getHomeState() == HomeState.HAS_EXITED) {
-				if (ghosts[i + 1].getHomeState() == HomeState.IS_HOME)
+				if (ghosts[i + 1].getHomeState() == HomeState.IS_HOME) {
 					ghosts[i + 1].setDotCounterState(DotCounterState.ACTIVE);
+				}
 			}
 		}
 	}

@@ -24,7 +24,7 @@ public abstract class Ghost {
 	// ghost can begin using its normal method for finding and making its next move.
 	// This method is called makeMove.
 	public enum HomeState {
-		IS_HOME, HAS_EXITED, IS_EXITING
+		IS_HOME, HAS_EXITED, IS_EXITING, IS_ENTERING
 	}
 
 	// DotCounterState is used to trigger each ghost's personal dot counter. This is
@@ -36,7 +36,7 @@ public abstract class Ghost {
 	// TargetingState represents the three states each ghost can have when choosing
 	// which square to travel to.
 	public enum TargetingState {
-		ATTACK, SCATTER, GO_HOME
+		ATTACK, SCATTER, FRIGHTENED, GO_HOME
 	}
 
 	// State represents the four main states of each ghost. These states are not
@@ -52,26 +52,24 @@ public abstract class Ghost {
 		INKY(new String[][] { { "images/inky_up.png", "images/inky_up1.png" },
 				{ "images/inky_down.png", "images/inky_down1.png" },
 				{ "images/inky_left.png", "images/inky_left1.png" },
-				{ "images/inky_right.png", "images/inky_right1.png" } }, 'I'),
+				{ "images/inky_right.png", "images/inky_right1.png" } }),
 		BLINKY(new String[][] { { "images/blinky_up.png", "images/blinky_up1.png" },
 				{ "images/blinky_down.png", "images/blinky_down1.png" },
 				{ "images/blinky_left.png", "images/blinky_left1.png" },
-				{ "images/blinky_right.png", "images/blinky_right1.png" } }, 'L'),
+				{ "images/blinky_right.png", "images/blinky_right1.png" } }),
 		PINKY(new String[][] { { "images/pinky_up.png", "images/pinky_up1.png" },
 				{ "images/pinky_down.png", "images/pinky_down1.png" },
 				{ "images/pinky_left.png", "images/pinky_left1.png" },
-				{ "images/pinky_right.png", "images/pinky_right1.png" } }, 'P'),
+				{ "images/pinky_right.png", "images/pinky_right1.png" } }),
 		CLYDE(new String[][] { { "images/clyde_up.png", "images/clyde_up1.png" },
 				{ "images/clyde_down.png", "images/clyde_down1.png" },
 				{ "images/clyde_left.png", "images/clyde_left1.png" },
-				{ "images/clyde_right.png", "images/clyde_right1.png" } }, 'C');
+				{ "images/clyde_right.png", "images/clyde_right1.png" } });
 
 		public String[][] filename;
-		public char spawn_char;
 
-		GhostName(String[][] filename, char spawn_char) {
+		GhostName(String[][] filename) {
 			this.filename = filename;
-			this.spawn_char = spawn_char;
 		}
 	}
 
@@ -118,7 +116,7 @@ public abstract class Ghost {
 	// This is necessary to allow for ghost's anti-backtracking movement to // be
 	// temporarily disabled.
 	private boolean back_tracking;
-
+	
 	// target_clock triggers a change in a ghost's targeting_state.
 	private int target_clock = 0;
 
@@ -130,7 +128,6 @@ public abstract class Ghost {
 	// *********************************************************************************//
 	// VARIABLES ASSOCIATED WITH MOVEMENT
 	// *********************************************************************************//
-	public char home_char = 'H';
 	public int spawnX;
 	public int spawnY;
 	
@@ -189,27 +186,7 @@ public abstract class Ghost {
 		character = Toolkit.getDefaultToolkit().getImage(ghost.filename[0][0]);
 	}
 
-	public void setSpawnLocation() {
-		int rows = tyle_board.length;
-		int columns = tyle_board[0].length;
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < columns; j++) {
-				if (tyle_board[i][j].c == ghost.spawn_char) {
-					spawnX = j * PacManBoard.dimension + PacManBoard.dimension / 2;
-					spawnY = i * PacManBoard.dimension;
-				}
-				if (tyle_board[i][j].c == home_char) {
-					home_target[0] = j * PacManBoard.dimension;
-					home_target[1] = i * PacManBoard.dimension;
-				}
-				if (tyle_board[i][j].c == 'L') {
-					exitX = j * PacManBoard.dimension + PacManBoard.dimension / 2;
-					exitY = i * PacManBoard.dimension;
-				}
-			}
-		}
-
-	}
+	public abstract void setSpawnLocation();
 
 	// Update a ghost's image based on which State its in.
 	public void updateImage() {
@@ -252,8 +229,9 @@ public abstract class Ghost {
 			if (ghost != GhostName.PINKY && getDeltaY() == 0) {
 				updateDeltaY(-1);
 			}
-			else if (ghost == GhostName.PINKY && getDeltaY() == 0)
+			else if (ghost == GhostName.PINKY && getDeltaY() == 0) {
 				updateDeltaY(1);
+			}
 			
 			if (getY() == spawnY + PacManBoard.dimension / 2)
 				updateDeltaY(-1);
@@ -307,11 +285,10 @@ public abstract class Ghost {
 			} else if (targeting_state == TargetingState.SCATTER) {
 				target = scatter_target; // Set the ghost's target equal to its appropriate state.
 			} else if (targeting_state == TargetingState.GO_HOME) {
-				target = home_target;
-				goHome(target); // Call goHome method during a Ghost's GO_HOME state because there are more
+				goHome(); // Call goHome method during a Ghost's GO_HOME state because there are more
 								// specific instructions.
-				updateX(getDeltaX()); // Update x and y for each move.
-				updateY(getDeltaY());
+				updateX(curDeltaX); // Update x and y for each move.
+				updateY(curDeltaY);
 				return; // Return to skip the next instructions.
 			}
 
@@ -325,8 +302,6 @@ public abstract class Ghost {
 
 	// This method takes in a dx and dy and updates a ghost's curdelta values.
 	public void getGhostMove(int targetX, int targetY) {
-		if (getTargetingState() == TargetingState.GO_HOME)
-			System.out.println(home_target[0] + " " + home_target[1]);
 		if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension].type == TyleType.TELEPORT)
 			teleport(tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension]); // Call this if a Ghost is on a
 																						// TELEPORT square.
@@ -409,6 +384,7 @@ public abstract class Ghost {
 		// density is not 1.
 		if (tyle_board[row][column] == Tyle.DOWN_ONLY_SQUARE && dy == -1 && density == 1)
 			return false;
+		
 		return true; // If not illegal conditions have been met, then this move is acceptable.
 	}
 
@@ -437,7 +413,7 @@ public abstract class Ghost {
 		}
 	}
 
-	public void stateHandler(PowerUp power_up) {
+	public void stateHandler() {
 
 		if (target_clock == 1200)
 			target_clock = 0;
@@ -448,42 +424,27 @@ public abstract class Ghost {
 			targeting_state = TargetingState.SCATTER;
 
 		target_clock++;
-
-		if (power_up.blueTimer == 0) {
-			if (power_up.getState() != PowerUp.State.OFF && !power_up.blinking)
-				state = State.BLUE;
-		} else if (state == State.BLUE && power_up.getState() != PowerUp.State.OFF && power_up.blinking == true
-				&& state != State.HEAD_HOME)
-			state = State.BLINKING;
-		if (power_up.getState() == PowerUp.State.OFF && state != State.HEAD_HOME)
-			state = State.DEFAULT;
 	}
 
 	public boolean checkCollision(PowerUp power_up, PacMan pacman) {
-		int x = pacman.getX();
-		int y = pacman.getY();
+		int pRow = pacman.getY() / PacManBoard.dimension;
+		int pCol = pacman.getX() / PacManBoard.dimension;
+		int gRow = y / PacManBoard.dimension;
+		int gCol = x / PacManBoard.dimension;
 
-		if (density == 1 && this.x / PacManBoard.dimension == x / PacManBoard.dimension
-				&& this.y / PacManBoard.dimension == y / PacManBoard.dimension) {
-			if (state != State.DEFAULT && state != State.HEAD_HOME) {
-				state = State.HEAD_HOME;
-				targeting_state = TargetingState.GO_HOME;
-				power_up.decrementGhosts();
-				back_tracking = true;
-			} else if (state != State.HEAD_HOME) {
-				return true;
-			}
+		if (density == 1 && pRow == gRow && pCol == gCol && state == State.DEFAULT) {
+			return true;
 		}
 		return false;
 	}
 
-	public void goHome(int[] target) {
-		if (x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0) {
-			getGhostMove(target[0], target[1]);
+	public void goHome() {
+		if ((x != home_target[0] || y != home_target[1]) && x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0) {
+			getGhostMove(home_target[0], home_target[1]);
 			density = 0;
-		}
-		if (x == home_target[0] && y == home_target[1]) {
+		} else {
 			state = State.DEFAULT;
+			home_state = HomeState.IS_EXITING;
 			targeting_state = TargetingState.ATTACK;
 			density = 1;
 		}
@@ -608,6 +569,10 @@ public abstract class Ghost {
 	public void updateDensity(int density) {
 		this.density = density;
 	}
+	
+	public int getDensity() {
+		return density;
+	}
 
 	public void setAttackTarget(int[] target) {
 		attack_target = target;
@@ -644,6 +609,10 @@ public abstract class Ghost {
 	public void setHomeState(HomeState home_state) {
 		this.home_state = home_state;
 	}
+	
+	public void setState(State state) {
+		this.state = state;
+	}
 
 	public HomeState getHomeState() {
 		return home_state;
@@ -664,6 +633,22 @@ public abstract class Ghost {
 
 	public void resetDotsCaptured() {
 		dots_captured = 0;
+	}
+	
+	public void setTargetingState(TargetingState targeting_state) {
+		this.targeting_state = targeting_state;
+	}
+	
+	public void setExitX(int exitX) {
+		this.exitX = exitX;
+	}
+	
+	public void setExitY(int exitY) {
+		this.exitY = exitY;
+	}
+
+	public void setBackTracking(boolean value) {
+		back_tracking = value;
 	}
 
 }
