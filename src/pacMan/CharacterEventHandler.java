@@ -39,9 +39,9 @@ public class CharacterEventHandler {
 		this.pacman = pacman;
 		this.ghosts = ghosts;
 		this.dotTimer = new DotTimer(ghosts);
-		this.ghostStateTimer = new GhostStateTimer(ghosts);
+		this.ghostStateTimer = new GhostStateTimer();
 		dotTimer.updateTimer();
-		ghostStateTimer.scheduleScatter();
+		// ghostStateTimer.scheduleAttack();
 		this.power_up = new PowerUp(pacman, ghosts, PowerUp.State.OFF, tyle_board);
 		this.tyle_board = tyle_board;
 	}

@@ -417,7 +417,7 @@ public abstract class Ghost {
 	}
 
 	public void stateHandler() {
-
+		/*
 		if (target_clock == 1200)
 			target_clock = 0;
 
@@ -427,6 +427,7 @@ public abstract class Ghost {
 			targeting_state = TargetingState.SCATTER;
 
 		target_clock++;
+		*/
 	}
 
 	public boolean checkCollision(PowerUp power_up, PacMan pacman) {
