@@ -11,6 +11,7 @@ public class GhostStateHandler{
 	public GhostStateHandler(Ghost[] ghosts) {
 		this.ghosts = ghosts;
 		this.ghostStateTimer = new GhostStateTimer();
+		//comment
 	}
 	
 	public void switchTargetState() {
