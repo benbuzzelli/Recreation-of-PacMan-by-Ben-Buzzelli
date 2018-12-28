@@ -337,10 +337,13 @@ public abstract class Ghost {
 											// distance.
 		}
 
+		int size = move.size();
 		for (int i = 0; i < move.size(); i++) {
-			if (getDistance(targetX, targetY, move.get(i)) > distance)
+			if (getDistance(targetX, targetY, move.get(i)) > distance) {
 				move.remove(i); // Remove any moves that result in a greater distance than the shortest
 								// distance.
+				i--;
+			}
 		}
 
 		return move.get(0);
@@ -414,7 +417,7 @@ public abstract class Ghost {
 	}
 
 	public void stateHandler() {
-
+		/*
 		if (target_clock == 1200)
 			target_clock = 0;
 
@@ -424,6 +427,7 @@ public abstract class Ghost {
 			targeting_state = TargetingState.SCATTER;
 
 		target_clock++;
+		*/
 	}
 
 	public boolean checkCollision(PowerUp power_up, PacMan pacman) {
@@ -439,7 +443,7 @@ public abstract class Ghost {
 	}
 
 	public void goHome() {
-		if ((x != home_target[0] || y != home_target[1]) && x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0) {
+		if (x != home_target[0] || y != home_target[1]) {
 			getGhostMove(home_target[0], home_target[1]);
 			density = 0;
 		} else {

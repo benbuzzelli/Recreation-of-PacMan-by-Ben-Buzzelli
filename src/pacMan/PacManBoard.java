@@ -21,6 +21,9 @@ import pacMan.TyleContainer.Tyle;
 public class PacManBoard extends JPanel implements KeyListener {
 
 
+	public static int FPS = 16;//TEMP VARIABLE!!!!!!!!!!
+	
+	
 	public static Scanner in = new Scanner(System.in);
 	public static final int dimension = 16;
 
@@ -179,7 +182,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	
 	public static void sleep() {
 		try {
-			Thread.sleep(16, 666);
+			Thread.sleep(FPS, 666);
 			// Thread.sleep(100, 666);
 		} catch (InterruptedException e) {
 

@@ -94,6 +94,7 @@ public class PowerUp {
 		
 		if (tyle_board[row][column].type == TyleType.POWERUP) {
 			setStateToBlue();
+			System.out.println("<-----------Powerup collision detected------------>");
 			pacman.state = PacMan.State.POWERED;
 			tyle_board[row][column] = Tyle.POWERUP_USED;
 		}
