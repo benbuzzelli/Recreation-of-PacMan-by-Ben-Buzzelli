@@ -49,17 +49,18 @@ public class PowerUp {
 		if (state != State.OFF) {
 			if (blueTimer == 0) {
 				setGhostStates(Ghost.State.BLUE);
-				setGhostTargetingStates(TargetingState.SCATTER);
+				setGhostTargetingStates(TargetingState.FRIGHTENED);
 			}
 			blueTimer++;
 		}
 		if (blueTimer == 300) {
 			setGhostStates(Ghost.State.BLINKING);
-			setGhostTargetingStates(TargetingState.SCATTER);
+			setGhostTargetingStates(TargetingState.FRIGHTENED);
 			blinking = true;		
 		}
 		if (blueTimer == 480 || blueTimer == 0) {
 			setGhostStates(Ghost.State.DEFAULT);
+			setGhostTargetingStates(TargetingState.ATTACK);
 			state = State.OFF;
 			resetGhostCount();
 			blueTimer = 0;
@@ -94,6 +95,7 @@ public class PowerUp {
 		
 		if (tyle_board[row][column].type == TyleType.POWERUP) {
 			setStateToBlue();
+			PacManBoard.TOTAL_DOTS--;
 			System.out.println("<-----------Powerup collision detected------------>");
 			pacman.state = PacMan.State.POWERED;
 			tyle_board[row][column] = Tyle.POWERUP_USED;
@@ -110,8 +112,11 @@ public class PowerUp {
 			if (gRow == pRow && gCol == pCol && ghost.getState() != Ghost.State.DEFAULT && ghost.getState() != Ghost.State.HEAD_HOME) {
 				ghost.setTargetingState(TargetingState.GO_HOME);
 				ghost.updateState(Ghost.State.HEAD_HOME);
+				
 				ghost.updateDensity(0);
 				ghost.setBackTracking(true);
+				for (int j = 0; j < 60; j++)
+					PacManBoard.sleep();
 			}
 		}
 	}

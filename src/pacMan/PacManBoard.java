@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -21,8 +22,9 @@ import pacMan.TyleContainer.Tyle;
 public class PacManBoard extends JPanel implements KeyListener {
 
 
-	public static int FPS = 16;//TEMP VARIABLE!!!!!!!!!!
-	
+	public static int FPS = 6;//TEMP VARIABLE!!!!!!!!!!
+	public static int TOTAL_DOTS = 0;
+	public static int totalScore = 0;
 	
 	public static Scanner in = new Scanner(System.in);
 	public static final int dimension = 16;
@@ -37,7 +39,8 @@ public class PacManBoard extends JPanel implements KeyListener {
 	private List<int[]> powerup_pos = new ArrayList<int[]>();
 
 	private int[] delta = {-1, 0};
-
+	GridLayout bigBoard = new GridLayout(2,1);
+	
 	public void getBoard(String file_name) throws FileNotFoundException {
 		File file = new File(file_name);
 		Scanner in = new Scanner(file);
@@ -124,6 +127,8 @@ public class PacManBoard extends JPanel implements KeyListener {
 				for (Tyle tyle : Tyle.values()) {
 					if (tyle.c == board.get(i).charAt(j)) {
 						tyle_board[i][j] = tyle;
+						if (board.get(i).charAt(j) == 'o' || board.get(i).charAt(j) == '@')
+							TOTAL_DOTS++;
 					}
 				}
 			}
@@ -144,7 +149,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	}
 
 	public void createBoard() throws FileNotFoundException {
-		getBoard("textBoard.txt");
+		getBoard("textBoard2.txt");
 	}
 	
 	private void setGhosts(Tyle[][] tyleBoard) {
@@ -168,10 +173,10 @@ public class PacManBoard extends JPanel implements KeyListener {
 		
 		characterHandler.handleStart();
 
-		while (true) {
+		while (PacManBoard.TOTAL_DOTS > 0) {
 
 			characterHandler.postKeyPressEventHandler(delta);
-
+			System.out.println(TOTAL_DOTS);
 			frame.repaint();
 			
 			sleep();
