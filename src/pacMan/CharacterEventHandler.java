@@ -116,8 +116,6 @@ public class CharacterEventHandler {
 			}
 			doCollisionEvents(ghost);
 		}
-		
-		
 	}
 	
 	private void doCollisionEvents(Ghost ghost) {
