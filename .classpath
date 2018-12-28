@@ -2,5 +2,30 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.cloudformation.feature_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.codecommit.feature_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.codedeploy.feature_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.codestar.feature_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.core.feature_2.3.1.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.elasticbeanstalk.feature_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.lambda.feature_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.opsworks.feature_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.rds.feature_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/features/com.amazonaws.eclipse.simpledb.feature_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.cloudformation_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.codecommit_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.codedeploy_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.codestar_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.core_2.3.1.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.dynamodb_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.ec2_1.1.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.elasticbeanstalk_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.identitymanagement_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.javasdk_1.11.248.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.lambda_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.opsworks_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.rds_1.0.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.sdk.ui_2.1.0.v201805311643.jar"/>
+	<classpathentry kind="lib" path="/Users/jakob/Google Drive/AWS/aws-toolkit-for-eclipse-v201805311643/plugins/com.amazonaws.eclipse.simpledb_1.0.0.v201805311643.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
