@@ -10,6 +10,10 @@ import pacMan.TyleContainer.TyleType;
 
 public class PacMan {
 
+	public enum Visibility {
+		VISIBLE, NOT_VISIBLE
+	}
+	
 	public enum State {
 		DEFAULT, POWERED
 	}
@@ -23,6 +27,7 @@ public class PacMan {
 
 	public Name name = Name.PACMAN;
 	public State state = State.DEFAULT;
+	private Visibility visibility = Visibility.VISIBLE;
 
 	public static String[][] filename_appendix = { { "_closed.png" }, { "_up.png", "_up1.png", },
 			{ "_down.png", "_down1.png", }, { "_left.png", "_left1.png", }, { "_right.png", "_right1.png", } };
@@ -272,6 +277,14 @@ public class PacMan {
 	
 	public int getSpeedPercent() {
 		return speed_percent;
+	}
+	
+	public Visibility getVisibility() {
+		return visibility;
+	}
+	
+	public void changeVisibility(Visibility visibility) {
+		this.visibility = visibility;
 	}
 
 }

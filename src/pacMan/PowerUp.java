@@ -6,6 +6,7 @@ import java.util.List;
 
 import pacMan.Ghost.GhostName;
 import pacMan.Ghost.TargetingState;
+import pacMan.Ghost.Visibility;
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
 
@@ -120,26 +121,21 @@ public class PowerUp {
 				ghost.updateState(Ghost.State.HEAD_HOME);
 				ghost.updateDensity(0);
 				ghost.setBackTracking(true);
-				Image ghostImage = ghost.getImage();
-				Image pacmanImage = pacman.getImage();
-				setToBlack(ghost);
-				PacManBoard.frame.repaint();
-				for (int j = 0; j < 60; j++) {
-					PacManBoard.sleep();
-				}
-				setToCurrent(ghost, ghostImage, pacmanImage);
+
+				setBlackTemporarily(ghost, 60);
 			}
 		}
 	}
 	
-	private void setToBlack(Ghost ghost) {
-		ghost.changeImage(Tyle.BLACK_SQUARE.filename, null);
-		pacman.changeImage(Tyle.BLACK_SQUARE.filename, null);
-	}
-	
-	private void setToCurrent(Ghost ghost, Image ghostImage, Image pacmanImage) {
-		ghost.changeImage(null, ghostImage);
-		pacman.changeImage(null, pacmanImage);
+	private void setBlackTemporarily(Ghost ghost, int seconds) {
+		ghost.changeVisibility(Visibility.NOT_VISIBLE);
+		pacman.changeVisibility(PacMan.Visibility.NOT_VISIBLE);
+		PacManBoard.frame.repaint();
+		for (int j = 0; j < seconds * 60; j++) {
+			PacManBoard.sleep();
+		}
+		ghost.changeVisibility(Visibility.VISIBLE);
+		pacman.changeVisibility(PacMan.Visibility.VISIBLE);
 	}
 	
 	private void setGhostTargetingStates(TargetingState targeting_state) {
