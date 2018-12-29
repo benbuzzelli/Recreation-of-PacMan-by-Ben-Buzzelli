@@ -22,7 +22,7 @@ import pacMan.TyleContainer.Tyle;
 public class PacManBoard extends JPanel implements KeyListener {
 
 
-	public static int FPS = 7;//TEMP VARIABLE!!!!!!!!!!
+	public static int FPS = 16;//TEMP VARIABLE!!!!!!!!!!
 	public static int TOTAL_DOTS = 0;
 	public static int totalScore = 0;
 	
@@ -125,7 +125,6 @@ public class PacManBoard extends JPanel implements KeyListener {
 		int yDimension = board.size() * dimension + 32;
 
 		frame.setSize(xDimension, yDimension);
-		System.out.println("board size: " + board.size());
 		frame.getContentPane().add(this);
 		frame.setLocationRelativeTo(null);
 		frame.setBackground(Color.LIGHT_GRAY);
@@ -209,7 +208,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		TOTAL_DOTS = 0;
 		totalScore = 0;
 		inPlayScoreBoard = null;
-		frame.removeAll();
+		// frame.removeAll();
 		
 		inPlayScoreBoard = new InPlayScoreBoard();
 		setScorePanel();

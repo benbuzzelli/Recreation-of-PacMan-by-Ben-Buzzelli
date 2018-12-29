@@ -122,7 +122,7 @@ public class PowerUp {
 				ghost.updateDensity(0);
 				ghost.setBackTracking(true);
 
-				setBlackTemporarily(ghost, 60);
+				setBlackTemporarily(ghost, 1);
 			}
 		}
 	}
