@@ -97,6 +97,7 @@ public class PowerUp {
 		if (tyle_board[row][column].type == TyleType.POWERUP) {
 			setStateToBlue();
 			PacManBoard.TOTAL_DOTS--;
+			PacManBoard.totalScore += 10;
 			System.out.println("<-----------Powerup collision detected------------>");
 			pacman.state = PacMan.State.POWERED;
 			tyle_board[row][column] = Tyle.POWERUP_USED;
