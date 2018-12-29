@@ -254,6 +254,13 @@ public class PacMan {
 	public Image getImage() {
 		return character;
 	}
+	
+	public void changeImage(String filename, Image image) {
+		if (image == null)
+			character = Toolkit.getDefaultToolkit().getImage(filename);
+		else
+			character = image;
+	}
 
 	public int getDimension() {
 		return dimension;

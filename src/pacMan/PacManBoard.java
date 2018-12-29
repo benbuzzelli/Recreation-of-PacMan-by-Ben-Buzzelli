@@ -22,7 +22,7 @@ import pacMan.TyleContainer.Tyle;
 public class PacManBoard extends JPanel implements KeyListener {
 
 
-	public static int FPS = 6;//TEMP VARIABLE!!!!!!!!!!
+	public static int FPS = 16;//TEMP VARIABLE!!!!!!!!!!
 	public static int TOTAL_DOTS = 0;
 	public static int totalScore = 0;
 	
@@ -32,14 +32,20 @@ public class PacManBoard extends JPanel implements KeyListener {
 	private PacMan pacman;
 	private Ghost[] ghosts = new Ghost[4];
 	
-	private JFrame frame = new JFrame();
+	public static JFrame frame = new JFrame();
 	private final ArrayList<String> board = new ArrayList<>();
 	private Tyle[][] tyle_board;
+	
+	private InPlayScoreBoard inPlayScoreBoard = new InPlayScoreBoard();
 
 	private List<int[]> powerup_pos = new ArrayList<int[]>();
 
 	private int[] delta = {-1, 0};
 	GridLayout bigBoard = new GridLayout(2,1);
+	
+	public void createBoard() throws FileNotFoundException {
+		getBoard("textBoard.txt");
+	}
 	
 	public void getBoard(String file_name) throws FileNotFoundException {
 		File file = new File(file_name);
@@ -59,6 +65,9 @@ public class PacManBoard extends JPanel implements KeyListener {
 		drawPacMan(g);
 		drawGhosts(g);
 		drawGameBorder(g);
+		
+		inPlayScoreBoard.drawScorePanel(g, this);
+		inPlayScoreBoard.drawScore(g, this);
 	}
 
 	private void drawGameBoard(Graphics g) {
@@ -109,7 +118,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	}
 
 	private void setFrame(JFrame frame) {
-		frame.setSize(512, 576);
+		frame.setSize(board.get(0).length() * dimension, board.size() * dimension + 32);
 		frame.getContentPane().add(this);
 		frame.setLocationRelativeTo(null);
 		frame.setBackground(Color.LIGHT_GRAY);
@@ -118,8 +127,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		frame.setResizable(false);
 		frame.addKeyListener(this);
 	}
-
-
+	
 	public void setTyleBoard(int boardRows, int boardColumns) {
 		tyle_board = new Tyle[boardRows][boardColumns];
 		for (int i = 0; i < boardRows; i++) {
@@ -127,12 +135,16 @@ public class PacManBoard extends JPanel implements KeyListener {
 				for (Tyle tyle : Tyle.values()) {
 					if (tyle.c == board.get(i).charAt(j)) {
 						tyle_board[i][j] = tyle;
-						if (board.get(i).charAt(j) == 'o' || board.get(i).charAt(j) == '@')
+						if (board.get(i).charAt(j) == 'o' || board.get(i).charAt(j) == '@' || board.get(i).charAt(j) == 'N')
 							TOTAL_DOTS++;
 					}
 				}
 			}
 		}
+	}
+	
+	private void setScorePanel() throws FileNotFoundException {
+		inPlayScoreBoard.createScorePanel();
 	}
 
 	public void getPowerUpLocations(int boardRows, int boardColumns) {
@@ -147,10 +159,6 @@ public class PacManBoard extends JPanel implements KeyListener {
 			}
 		}
 	}
-
-	public void createBoard() throws FileNotFoundException {
-		getBoard("textBoard2.txt");
-	}
 	
 	private void setGhosts(Tyle[][] tyleBoard) {
 		ghosts[0] = new Blinky(tyleBoard);
@@ -162,6 +170,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	public void startGame() throws FileNotFoundException {
 		createBoard();
 		setTyleBoard(board.size(), board.get(0).length());
+		setScorePanel();
 		pacman = new PacMan(tyle_board);
 		getPowerUpLocations(board.size(), board.get(0).length());
 		setGhosts(tyle_board);
@@ -176,7 +185,6 @@ public class PacManBoard extends JPanel implements KeyListener {
 		while (PacManBoard.TOTAL_DOTS > 0) {
 
 			characterHandler.postKeyPressEventHandler(delta);
-			System.out.println(TOTAL_DOTS);
 			frame.repaint();
 			
 			sleep();

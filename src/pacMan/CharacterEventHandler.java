@@ -110,6 +110,7 @@ public class CharacterEventHandler {
 		
 
 		if (pacman.updateDots(tyle_board)) {
+			PacManBoard.totalScore += 10;
 			dotTimer.cancelTimer();
 			PacManBoard.TOTAL_DOTS--;
 		}

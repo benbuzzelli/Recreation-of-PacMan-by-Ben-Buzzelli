@@ -453,6 +453,7 @@ public abstract class Ghost {
 	public void goHome() {
 		if (x != home_target[0] || y != home_target[1]) {
 			getGhostMove(home_target[0], home_target[1]);
+			targeting_state = TargetingState.GO_HOME;
 			density = 0;
 		} else {
 			state = State.DEFAULT;
@@ -556,6 +557,13 @@ public abstract class Ghost {
 
 	public Image getImage() {
 		return character;
+	}
+	
+	public void changeImage(String filename, Image image) {
+		if (image == null)
+			character = Toolkit.getDefaultToolkit().getImage(filename);
+		else
+			character = image;
 	}
 
 	public int getStartCount() {

@@ -8,21 +8,10 @@ import pacMan.Ghost.TargetingState;
 
 public class GhostStateTimer {
 	private Timer timer = new Timer();
-	private boolean isScatter;
-	private boolean isAttack;
-	private boolean isFrightened;
 	private TargetingState targetingState = TargetingState.SCATTER;
 	
 	private int scatter_sec = 7;
 	private int attack_sec = 20;
-	
-	public boolean getIsScatter() {
-		return isScatter;
-	}
-	
-	public boolean getIsAttack() {
-		return isAttack;
-	}
 	
 	public TargetingState getTargetState() {
 		return targetingState;
@@ -41,24 +30,18 @@ public class GhostStateTimer {
 	class SetToAttack extends TimerTask {
 		
 		public void run() {
-			isScatter = false;
-			isAttack = true;
 			targetingState = TargetingState.ATTACK;
 			timer.cancel();
 			scheduleScatter();
-			System.out.println("set to 20");
 		}
 	}
 	
 	class SetToScatter extends TimerTask {
 		
 		public void run() {
-			isAttack = false;
-			isScatter = true;
 			targetingState = TargetingState.SCATTER;
 			timer.cancel();
 			scheduleAttack();
-			System.out.println("set to 7");
 		}
 	}
 }

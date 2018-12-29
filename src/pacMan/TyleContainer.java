@@ -43,7 +43,7 @@ public class TyleContainer {
 		BLACK_GHOST_SQUARE("images/black_ghost_square.png", '_', TyleType.GHOSTSPACE),
 		
 		// PacMan spawn location
-		PACMAN_SPAWN_TYLE("images/black_square.png", 'N', TyleType.EMPTY),
+		PACMAN_SPAWN_TYLE("images/dot_square.png", 'N', TyleType.DOT),
 				
 		DOWN_ONLY_SQUARE("images/black_square.png", '^', TyleType.EMPTY), DOT_SQUARE("images/dot_square.png", 'o', TyleType.DOT),
 		POWERUP_USED("images/black_square.png", '$', TyleType.EMPTY), POWERUP("images/powerup.png", '@', TyleType.POWERUP),
