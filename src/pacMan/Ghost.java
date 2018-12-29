@@ -7,6 +7,7 @@ import java.util.List;
 
 import pacMan.Ghost.DotCounterState;
 import pacMan.Ghost.HomeState;
+import pacMan.PacMan.Visibility;
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
 
@@ -44,6 +45,10 @@ public abstract class Ghost {
 	// changes and other ghost states.
 	public enum State {
 		DEFAULT, BLUE, BLINKING, HEAD_HOME
+	}
+	
+	public enum Visibility {
+		VISIBLE, NOT_VISIBLE
 	}
 
 	// GhostName is the most broad enum. Each ghost name is an enum. These store the
@@ -107,6 +112,7 @@ public abstract class Ghost {
 	private TargetingState targeting_state;
 	private State state;
 	private GhostName ghost;
+	private Visibility visibility = Visibility.VISIBLE;
 	// *********************************************************************************//
 	// *********************************************************************************//
 	// STATE DETERMINATION VARIABLES
@@ -673,6 +679,14 @@ public abstract class Ghost {
 
 	public void setBackTracking(boolean value) {
 		back_tracking = value;
+	}
+	
+	public Visibility getVisibility() {
+		return visibility;
+	}
+	
+	public void changeVisibility(Visibility visibility) {
+		this.visibility = visibility;
 	}
 
 }

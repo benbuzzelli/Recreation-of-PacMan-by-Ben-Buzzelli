@@ -22,7 +22,7 @@ import pacMan.TyleContainer.Tyle;
 public class PacManBoard extends JPanel implements KeyListener {
 
 
-	public static int FPS = 16;//TEMP VARIABLE!!!!!!!!!!
+	public static int FPS = 7;//TEMP VARIABLE!!!!!!!!!!
 	public static int TOTAL_DOTS = 0;
 	public static int totalScore = 0;
 	
@@ -101,13 +101,16 @@ public class PacManBoard extends JPanel implements KeyListener {
 		int height = pacman.getImage().getHeight(this);
 		int xplus = -(width / 2 - dimension) / 2;
 		int yplus = -(height / 2 - dimension) / 2;
-
-		g.drawImage(pacman.getImage(), pacman.getX() + xplus, pacman.getY() + yplus, width / 2, height / 2, this);
+		
+		if (pacman.getVisibility() == PacMan.Visibility.VISIBLE)
+			g.drawImage(pacman.getImage(), pacman.getX() + xplus, pacman.getY() + yplus, width / 2, height / 2, this);
 	}
 
 	private void drawGhosts(Graphics g) {
 		for (int i = 0; i < ghosts.length; i++) {
 			Ghost ghost = ghosts[i];
+			if (ghost.getVisibility() == Ghost.Visibility.NOT_VISIBLE)
+				continue;
 			int width = ghost.getImage().getWidth(this);
 			int height = ghost.getImage().getHeight(this);
 			int xplus = -(width / 2 - dimension) / 2;
@@ -118,7 +121,10 @@ public class PacManBoard extends JPanel implements KeyListener {
 	}
 
 	private void setFrame(JFrame frame) {
-		frame.setSize(board.get(0).length() * dimension, board.size() * dimension + 32);
+		int xDimension = board.get(0).length() * dimension;
+		int yDimension = board.size() * dimension + 32;
+
+		frame.setSize(xDimension, yDimension);
 		System.out.println("board size: " + board.size());
 		frame.getContentPane().add(this);
 		frame.setLocationRelativeTo(null);
@@ -175,12 +181,12 @@ public class PacManBoard extends JPanel implements KeyListener {
 		setTyleBoard();
 		setScorePanel();
 		getPowerUpLocations(board.size(), board.get(0).length());
-		setFrame(frame);
 	}
 
 	public void startGame() throws FileNotFoundException {
 		pacman = new PacMan(tyle_board);
 		setGhosts(tyle_board);
+		setFrame(frame);
 		
 		CharacterEventHandler characterHandler = new CharacterEventHandler(60, pacman, ghosts, tyle_board);
 
@@ -203,6 +209,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		TOTAL_DOTS = 0;
 		totalScore = 0;
 		inPlayScoreBoard = null;
+		frame.removeAll();
 		
 		inPlayScoreBoard = new InPlayScoreBoard();
 		setScorePanel();
