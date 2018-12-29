@@ -25,7 +25,7 @@ public class CharacterEventHandler {
 	private boolean global_dot_counter;
 	
 	private DotTimer dotTimer;
-	private GhostStateTimer ghostStateTimer;
+	private GhostStateHandler ghostStateHandler;
 		
 	private int[] globat_dot_limit = {0, 7, 17, 32};
 	
@@ -39,9 +39,9 @@ public class CharacterEventHandler {
 		this.pacman = pacman;
 		this.ghosts = ghosts;
 		this.dotTimer = new DotTimer(ghosts);
-		this.ghostStateTimer = new GhostStateTimer();
+		this.ghostStateHandler = new GhostStateHandler(ghosts);
 		dotTimer.updateTimer();
-		// ghostStateTimer.scheduleAttack();
+		ghostStateHandler.ghostStateTimer.scheduleAttack();
 		this.power_up = new PowerUp(pacman, ghosts, PowerUp.State.OFF, tyle_board);
 		this.tyle_board = tyle_board;
 	}
@@ -62,7 +62,9 @@ public class CharacterEventHandler {
 	 * @param delta Array of length 2, with x and y deltas for PacMan to move. PacMan will move by x=speed*delta[0] and by y=speed*delta[1]
 	 */
 	public void postKeyPressEventHandler(int[] delta) {
+			
 		pacmanHandler();
+		ghostStateHandler.switchTargetState();
 		
 		power_up.blinkPowerUps(cycle_frame, 10);
 		power_up.powerupHandler(pacman);
@@ -91,7 +93,6 @@ public class CharacterEventHandler {
 		ghost.setSpeed();
 		ghost.setImage();
 		ghost.updateImage();
-		ghost.stateHandler();
 	}
 	
 	private void pacmanHandler() {
@@ -109,7 +110,9 @@ public class CharacterEventHandler {
 		
 
 		if (pacman.updateDots(tyle_board)) {
+			PacManBoard.totalScore += 10;
 			dotTimer.cancelTimer();
+			PacManBoard.TOTAL_DOTS--;
 		}
 		dotTimer.restartTimer();
 		

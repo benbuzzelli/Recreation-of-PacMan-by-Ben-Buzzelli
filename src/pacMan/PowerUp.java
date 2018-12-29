@@ -1,5 +1,6 @@
 package pacMan;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,17 +50,18 @@ public class PowerUp {
 		if (state != State.OFF) {
 			if (blueTimer == 0) {
 				setGhostStates(Ghost.State.BLUE);
-				setGhostTargetingStates(TargetingState.SCATTER);
+				setGhostTargetingStates(TargetingState.FRIGHTENED);
 			}
 			blueTimer++;
 		}
 		if (blueTimer == 300) {
 			setGhostStates(Ghost.State.BLINKING);
-			setGhostTargetingStates(TargetingState.SCATTER);
+			setGhostTargetingStates(TargetingState.FRIGHTENED);
 			blinking = true;		
 		}
-		if (blueTimer == 480 || blueTimer == 0) {
+		if (blueTimer == 480) {
 			setGhostStates(Ghost.State.DEFAULT);
+			setGhostTargetingStates(TargetingState.ATTACK);
 			state = State.OFF;
 			resetGhostCount();
 			blueTimer = 0;
@@ -94,6 +96,8 @@ public class PowerUp {
 		
 		if (tyle_board[row][column].type == TyleType.POWERUP) {
 			setStateToBlue();
+			PacManBoard.TOTAL_DOTS--;
+			PacManBoard.totalScore += 10;
 			System.out.println("<-----------Powerup collision detected------------>");
 			pacman.state = PacMan.State.POWERED;
 			tyle_board[row][column] = Tyle.POWERUP_USED;
@@ -108,12 +112,34 @@ public class PowerUp {
 			int pRow = pacman.getY() / PacManBoard.dimension;
 			int pCol = pacman.getX() / PacManBoard.dimension;
 			if (gRow == pRow && gCol == pCol && ghost.getState() != Ghost.State.DEFAULT && ghost.getState() != Ghost.State.HEAD_HOME) {
+				
+				PacManBoard.totalScore += state.score;
+				
+				decrementGhosts();
 				ghost.setTargetingState(TargetingState.GO_HOME);
 				ghost.updateState(Ghost.State.HEAD_HOME);
 				ghost.updateDensity(0);
 				ghost.setBackTracking(true);
+				Image ghostImage = ghost.getImage();
+				Image pacmanImage = pacman.getImage();
+				setToBlack(ghost);
+				PacManBoard.frame.repaint();
+				for (int j = 0; j < 60; j++) {
+					PacManBoard.sleep();
+				}
+				setToCurrent(ghost, ghostImage, pacmanImage);
 			}
 		}
+	}
+	
+	private void setToBlack(Ghost ghost) {
+		ghost.changeImage(Tyle.BLACK_SQUARE.filename, null);
+		pacman.changeImage(Tyle.BLACK_SQUARE.filename, null);
+	}
+	
+	private void setToCurrent(Ghost ghost, Image ghostImage, Image pacmanImage) {
+		ghost.changeImage(null, ghostImage);
+		pacman.changeImage(null, pacmanImage);
 	}
 	
 	private void setGhostTargetingStates(TargetingState targeting_state) {

@@ -117,9 +117,6 @@ public abstract class Ghost {
 	// temporarily disabled.
 	private boolean back_tracking;
 	
-	// target_clock triggers a change in a ghost's targeting_state.
-	private int target_clock = 0;
-
 	// This is the limit of dots needed to be collected for this ghost
 	// to leave its spawn location.
 	private int dot_trigger_count;
@@ -315,8 +312,13 @@ public abstract class Ghost {
 				move.add(delta[i]); // Add a move to the list if it is valid.
 			}
 		}
-
-		int[] chosen_move = findClosestMove(targetX, targetY, move); // Call findClosestMove to get the desired move.
+		
+		int[] chosen_move = new int[2];
+		if (targeting_state != TargetingState.FRIGHTENED)
+			chosen_move = findClosestMove(targetX, targetY, move); // Call findClosestMove to get the desired move.
+		else {
+			chosen_move = findLongestMove(targetX, targetY, move);
+		}
 		updateSpeed(speed);
 
 		updateDeltaX(chosen_move[0]); // Update each delta with the new move.
@@ -337,9 +339,29 @@ public abstract class Ghost {
 											// distance.
 		}
 
-		int size = move.size();
 		for (int i = 0; i < move.size(); i++) {
 			if (getDistance(targetX, targetY, move.get(i)) > distance) {
+				move.remove(i); // Remove any moves that result in a greater distance than the shortest
+								// distance.
+				i--;
+			}
+		}
+
+		return move.get(0);
+	}
+	
+	private int[] findLongestMove(int targetX, int targetY, List<int[]> move) {
+		double distance = -100;
+
+		for (int i = 0; i < move.size(); i++) {
+			double tempDistance = getDistance(targetX, targetY, move.get(i)); // Use getDistance to find move's diagonal
+																				// distance to its target.
+			if (tempDistance > distance)
+				distance = tempDistance;
+		}
+
+		for (int i = 0; i < move.size(); i++) {
+			if (getDistance(targetX, targetY, move.get(i)) < distance) {
 				move.remove(i); // Remove any moves that result in a greater distance than the shortest
 								// distance.
 				i--;
@@ -416,20 +438,6 @@ public abstract class Ghost {
 		}
 	}
 
-	public void stateHandler() {
-		/*
-		if (target_clock == 1200)
-			target_clock = 0;
-
-		if (target_clock / 600 == 0 && targeting_state != TargetingState.GO_HOME)
-			targeting_state = TargetingState.ATTACK;
-		else if (target_clock / 600 == 1 && targeting_state != TargetingState.GO_HOME)
-			targeting_state = TargetingState.SCATTER;
-
-		target_clock++;
-		*/
-	}
-
 	public boolean checkCollision(PowerUp power_up, PacMan pacman) {
 		int pRow = pacman.getY() / PacManBoard.dimension;
 		int pCol = pacman.getX() / PacManBoard.dimension;
@@ -445,6 +453,7 @@ public abstract class Ghost {
 	public void goHome() {
 		if (x != home_target[0] || y != home_target[1]) {
 			getGhostMove(home_target[0], home_target[1]);
+			targeting_state = TargetingState.GO_HOME;
 			density = 0;
 		} else {
 			state = State.DEFAULT;
@@ -480,6 +489,10 @@ public abstract class Ghost {
 				character = Toolkit.getDefaultToolkit().getImage(eyes[i]);
 			}
 		}
+	}
+	
+	public void setFrightenedTarget(PacMan pacman) {
+		setAttackTarget(new int[] {pacman.getX(), pacman.getY()});
 	}
 
 	public void updateDeltaX(int deltaX) {
@@ -544,6 +557,13 @@ public abstract class Ghost {
 
 	public Image getImage() {
 		return character;
+	}
+	
+	public void changeImage(String filename, Image image) {
+		if (image == null)
+			character = Toolkit.getDefaultToolkit().getImage(filename);
+		else
+			character = image;
 	}
 
 	public int getStartCount() {

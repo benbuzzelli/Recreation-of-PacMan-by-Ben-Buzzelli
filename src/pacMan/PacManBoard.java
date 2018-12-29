@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -22,7 +23,8 @@ public class PacManBoard extends JPanel implements KeyListener {
 
 
 	public static int FPS = 16;//TEMP VARIABLE!!!!!!!!!!
-	
+	public static int TOTAL_DOTS = 0;
+	public static int totalScore = 0;
 	
 	public static Scanner in = new Scanner(System.in);
 	public static final int dimension = 16;
@@ -30,14 +32,21 @@ public class PacManBoard extends JPanel implements KeyListener {
 	private PacMan pacman;
 	private Ghost[] ghosts = new Ghost[4];
 	
-	private JFrame frame = new JFrame();
+	public static JFrame frame = new JFrame();
 	private final ArrayList<String> board = new ArrayList<>();
 	private Tyle[][] tyle_board;
+	
+	private InPlayScoreBoard inPlayScoreBoard = new InPlayScoreBoard();
 
 	private List<int[]> powerup_pos = new ArrayList<int[]>();
 
 	private int[] delta = {-1, 0};
-
+	GridLayout bigBoard = new GridLayout(2,1);
+	
+	public void createBoard() throws FileNotFoundException {
+		getBoard("textBoard.txt");
+	}
+	
 	public void getBoard(String file_name) throws FileNotFoundException {
 		File file = new File(file_name);
 		Scanner in = new Scanner(file);
@@ -56,6 +65,9 @@ public class PacManBoard extends JPanel implements KeyListener {
 		drawPacMan(g);
 		drawGhosts(g);
 		drawGameBorder(g);
+		
+		inPlayScoreBoard.drawScorePanel(g, this);
+		inPlayScoreBoard.drawScore(g, this);
 	}
 
 	private void drawGameBoard(Graphics g) {
@@ -106,7 +118,8 @@ public class PacManBoard extends JPanel implements KeyListener {
 	}
 
 	private void setFrame(JFrame frame) {
-		frame.setSize(512, 576);
+		frame.setSize(board.get(0).length() * dimension, board.size() * dimension + 32);
+		System.out.println("board size: " + board.size());
 		frame.getContentPane().add(this);
 		frame.setLocationRelativeTo(null);
 		frame.setBackground(Color.LIGHT_GRAY);
@@ -115,19 +128,26 @@ public class PacManBoard extends JPanel implements KeyListener {
 		frame.setResizable(false);
 		frame.addKeyListener(this);
 	}
-
-
-	public void setTyleBoard(int boardRows, int boardColumns) {
+	
+	public void setTyleBoard() {
+		int boardRows = board.size();
+		int boardColumns = board.get(0).length();
 		tyle_board = new Tyle[boardRows][boardColumns];
 		for (int i = 0; i < boardRows; i++) {
 			for (int j = 0; j < boardColumns; j++) {
 				for (Tyle tyle : Tyle.values()) {
 					if (tyle.c == board.get(i).charAt(j)) {
 						tyle_board[i][j] = tyle;
+						if (board.get(i).charAt(j) == 'o' || board.get(i).charAt(j) == '@' || board.get(i).charAt(j) == 'N')
+							TOTAL_DOTS++;
 					}
 				}
 			}
 		}
+	}
+	
+	private void setScorePanel() throws FileNotFoundException {
+		inPlayScoreBoard.createScorePanel();
 	}
 
 	public void getPowerUpLocations(int boardRows, int boardColumns) {
@@ -142,10 +162,6 @@ public class PacManBoard extends JPanel implements KeyListener {
 			}
 		}
 	}
-
-	public void createBoard() throws FileNotFoundException {
-		getBoard("textBoard.txt");
-	}
 	
 	private void setGhosts(Tyle[][] tyleBoard) {
 		ghosts[0] = new Blinky(tyleBoard);
@@ -153,14 +169,18 @@ public class PacManBoard extends JPanel implements KeyListener {
 		ghosts[2] = new Inky(tyleBoard);
 		ghosts[3] = new Clyde(tyleBoard);
 	}
+	
+	public void gameStartUp() throws FileNotFoundException {
+		createBoard();
+		setTyleBoard();
+		setScorePanel();
+		getPowerUpLocations(board.size(), board.get(0).length());
+		setFrame(frame);
+	}
 
 	public void startGame() throws FileNotFoundException {
-		createBoard();
-		setTyleBoard(board.size(), board.get(0).length());
 		pacman = new PacMan(tyle_board);
-		getPowerUpLocations(board.size(), board.get(0).length());
 		setGhosts(tyle_board);
-		setFrame(frame);
 		
 		CharacterEventHandler characterHandler = new CharacterEventHandler(60, pacman, ghosts, tyle_board);
 
@@ -168,16 +188,25 @@ public class PacManBoard extends JPanel implements KeyListener {
 		
 		characterHandler.handleStart();
 
-		while (true) {
+		while (PacManBoard.TOTAL_DOTS > 0) {
 
 			characterHandler.postKeyPressEventHandler(delta);
-
 			frame.repaint();
 			
 			sleep();
 
 		}
 
+	}
+	
+	public void resetGame() throws FileNotFoundException {
+		TOTAL_DOTS = 0;
+		totalScore = 0;
+		inPlayScoreBoard = null;
+		
+		inPlayScoreBoard = new InPlayScoreBoard();
+		setScorePanel();
+		setTyleBoard();
 	}
 	
 	public static void sleep() {
