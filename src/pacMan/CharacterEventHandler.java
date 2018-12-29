@@ -1,9 +1,11 @@
 package pacMan;
+import java.io.IOException;
 import java.util.Timer;
 
 import pacMan.Ghost.DotCounterState;
 import pacMan.Ghost.HomeState;
 import pacMan.Ghost.TargetingState;
+import pacMan.Ghost.Visibility;
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
 
@@ -46,7 +48,7 @@ public class CharacterEventHandler {
 		this.tyle_board = tyle_board;
 	}
 
-	public void setCharacters() {
+	public void setCharacters() throws IOException {
 		for (int i = 0; i < 4; i++) {
 			Ghost ghost = ghosts[i];
 			ghost.setImage();
@@ -60,8 +62,9 @@ public class CharacterEventHandler {
 	/**
 	 * Run in the startGame() in a continuous while-loop. Works by updating image of pacMan based on his state and updating each of the ghosts individually
 	 * @param delta Array of length 2, with x and y deltas for PacMan to move. PacMan will move by x=speed*delta[0] and by y=speed*delta[1]
+	 * @throws IOException 
 	 */
-	public void postKeyPressEventHandler(int[] delta) {
+	public void postKeyPressEventHandler(int[] delta) throws IOException {
 			
 		pacmanHandler();
 		ghostStateHandler.switchTargetState();
@@ -95,12 +98,12 @@ public class CharacterEventHandler {
 		ghost.updateImage();
 	}
 	
-	private void pacmanHandler() {
+	private void pacmanHandler() throws IOException {
 		pacman.updateImage();
 		pacman.setSpeed(tyle_board);
 	}
 	
-	private void ghostHandler() {
+	private void ghostHandler() throws IOException {
 		if (!global_dot_counter) {
 			incrementGhostDotCount();
 		}
@@ -135,11 +138,32 @@ public class CharacterEventHandler {
 		
 	}
 	
-	private void doCollisionEvents(Ghost ghost) {
+	private void doCollisionEvents(Ghost ghost) throws IOException {
 		if (ghost.checkCollision(power_up, pacman)) {
 			global_dot_counter = true;
 			global_dots_captured = 0;
+			
+			for (int i = 0; i < 30; i++) {
+				PacManBoard.sleep();
+			}
+			
+			for (int i = 0; i < 4; i++) {
+				ghosts[i].changeVisibility(Visibility.NOT_VISIBLE);
+			}
+			pacman.setState(PacMan.State.DEAD);
+			
+			for (int i = 0; i < 33; i++) {
+				pacman.updateImage();
+				PacManBoard.frame.repaint();
+				PacManBoard.sleep();
+			}
+			
+			for (int i = 0; i < 4; i++) {
+				ghosts[i].changeVisibility(Visibility.VISIBLE);
+			}
+			pacman.setState(PacMan.State.DEFAULT);
 			pacman.resetPacMan();
+			PacManBoard.frame.repaint();
 			
 			dotTimer.updateTimer();
 			
@@ -182,7 +206,8 @@ public class CharacterEventHandler {
 		}
 	}
 
-	public void handleStart() {
+	public void handleStart() throws IOException {
+		pacman.updateImage();
 		while (pacman.getStartCount() != -1) {
 			pacman.pacmanStart();
 			PacManBoard.sleep();

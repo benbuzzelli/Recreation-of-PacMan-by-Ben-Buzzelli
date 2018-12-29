@@ -2,6 +2,7 @@ package pacMan;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.IOException;
 import java.util.Timer;
 
 import pacMan.TyleContainer.Tyle;
@@ -15,7 +16,7 @@ public class PacMan {
 	}
 	
 	public enum State {
-		DEFAULT, POWERED
+		DEFAULT, POWERED, DEAD
 	}
 
 	public enum Name {
@@ -25,14 +26,19 @@ public class PacMan {
 
 	}
 
+	private static final PacManBoard pcBoard = null;
+
 	public Name name = Name.PACMAN;
 	public State state = State.DEFAULT;
 	private Visibility visibility = Visibility.VISIBLE;
 
+	private String dyingSpriteSheet = "images/PacManDyingSprite.png";
 	public static String[][] filename_appendix = { { "_closed.png" }, { "_up.png", "_up1.png", },
 			{ "_down.png", "_down1.png", }, { "_left.png", "_left1.png", }, { "_right.png", "_right1.png", } };
 	public Image character = Toolkit.getDefaultToolkit().getImage(name.filename_prefix + filename_appendix[0][0]);
 	public int image_frame = 0;
+	
+	private Animator spriteAnimator = new Animator();
 
 	private Tyle[][] tyle_board;
 	
@@ -135,7 +141,7 @@ public class PacMan {
 		}
 	}
 	
-	public void updateImage() {
+	public void updateImage() throws IOException {
 		if (image_frame == 12)
 			image_frame = 0;
 		
@@ -144,25 +150,29 @@ public class PacMan {
 		image_frame++;
 	}
 
-	public void rotateCharacter() {
+	public void rotateCharacter() throws IOException {
 
-		int[][] delta = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } };
-
-		for (int i = 1; i < 5; i++) {
-			if (curDeltaX == delta[i-1][0] && curDeltaY == delta[i-1][1]) {
-				String filename = new String();
-				if (curSpeed != 0) {
-					if (image_frame / 4 == 2)
-						filename = name.filename_prefix + filename_appendix[0][0];
+		if (state != State.DEAD) {
+			int[][] delta = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } };
+	
+			for (int i = 1; i < 5; i++) {
+				if (curDeltaX == delta[i-1][0] && curDeltaY == delta[i-1][1]) {
+					String filename = new String();
+					if (curSpeed != 0) {
+						if (image_frame / 4 == 2)
+							filename = name.filename_prefix + filename_appendix[0][0];
+						else
+							filename = name.filename_prefix + filename_appendix[i][image_frame / 4];
+					}
 					else
-						filename = name.filename_prefix + filename_appendix[i][image_frame / 4];
+						filename = name.filename_prefix + filename_appendix[i][0];
+					character = Toolkit.getDefaultToolkit().getImage(filename);
 				}
-				else
-					filename = name.filename_prefix + filename_appendix[i][0];
-				character = Toolkit.getDefaultToolkit().getImage(filename);
+				else if (curSpeed == 0 && curDeltaX == 0 && curDeltaY == 0)
+					character = Toolkit.getDefaultToolkit().getImage(name.filename_prefix + filename_appendix[0][0]);
 			}
-			else if (curSpeed == 0 && curDeltaX == 0 && curDeltaY == 0)
-				character = Toolkit.getDefaultToolkit().getImage(name.filename_prefix + filename_appendix[0][0]);
+		} else {
+			character = spriteAnimator.generateSpriteAnimation(3, 11, dyingSpriteSheet, pcBoard);
 		}
 	}
 
@@ -285,6 +295,10 @@ public class PacMan {
 	
 	public void changeVisibility(Visibility visibility) {
 		this.visibility = visibility;
+	}
+	
+	public void setState(State state) {
+		this.state = state;
 	}
 
 }

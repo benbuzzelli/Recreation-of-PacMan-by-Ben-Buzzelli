@@ -2,7 +2,7 @@ package pacMan;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -182,7 +182,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		getPowerUpLocations(board.size(), board.get(0).length());
 	}
 
-	public void startGame() throws FileNotFoundException {
+	public void startGame() throws IOException {
 		pacman = new PacMan(tyle_board);
 		setGhosts(tyle_board);
 		setFrame(frame);
