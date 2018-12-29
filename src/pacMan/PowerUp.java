@@ -1,6 +1,7 @@
 package pacMan;
 
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,15 +14,19 @@ import pacMan.TyleContainer.TyleType;
 public class PowerUp {
 
 	public enum State {
-		OFF(0), BLUE_200(200), BLUE_400(400), BLUE_800(800), BLUE_1600(1600);
+		OFF(0, null), BLUE_200(200, "images_score_panel/200.png"), BLUE_400(400, "images_score_panel/400.png"),
+		BLUE_800(800, "images_score_panel/800.png"), BLUE_1600(1600, "images_score_panel/1600.png");
 
 		int score;
+		String filename;
+		Image image;
 
-		State(int score) {
+		State(int score, String filename) {
 			this.score = score;
+			this.image = Toolkit.getDefaultToolkit().getImage(filename);
 		}
 	}
-	
+
 	private State state;
 	private Ghost[] ghosts;
 	private PacMan pacman;
@@ -29,9 +34,9 @@ public class PowerUp {
 	public int blueTimer = 0;
 	public boolean blinking;
 	private List<int[]> powerup_pos = new ArrayList<int[]>();
-	
+
 	private Tyle[][] tyle_board;
-	
+
 	public PowerUp(PacMan pacman, Ghost[] ghosts, State state, Tyle[][] tyle_board) {
 		this.state = state;
 		this.tyle_board = tyle_board;
@@ -39,14 +44,14 @@ public class PowerUp {
 		this.ghosts = ghosts;
 		getPowerUpLocations();
 	}
-	
+
 	public void powerupHandler(PacMan pacman) {
 		updateState();
 		incrementState();
 		getPowerupCollision();
 		getPacManCollision();
 	}
-	
+
 	public void updateState() {
 		if (state != State.OFF) {
 			if (blueTimer == 0) {
@@ -58,7 +63,7 @@ public class PowerUp {
 		if (blueTimer == 300) {
 			setGhostStates(Ghost.State.BLINKING);
 			setGhostTargetingStates(TargetingState.FRIGHTENED);
-			blinking = true;		
+			blinking = true;
 		}
 		if (blueTimer == 480) {
 			setGhostStates(Ghost.State.DEFAULT);
@@ -75,7 +80,7 @@ public class PowerUp {
 		blueTimer = 0;
 		blinking = false;
 	}
-	
+
 	public void incrementState() {
 		if (ghosts_remaining == 3)
 			state = State.BLUE_400;
@@ -86,15 +91,15 @@ public class PowerUp {
 		if (ghosts_remaining == 0)
 			state = State.OFF;
 	}
-	
+
 	public State getState() {
 		return state;
 	}
-	
+
 	public void getPowerupCollision() {
-		int row = pacman.getY()/PacManBoard.dimension;
-		int column = pacman.getX()/PacManBoard.dimension;
-		
+		int row = pacman.getY() / PacManBoard.dimension;
+		int column = pacman.getX() / PacManBoard.dimension;
+
 		if (tyle_board[row][column].type == TyleType.POWERUP) {
 			setStateToBlue();
 			PacManBoard.TOTAL_DOTS--;
@@ -104,7 +109,7 @@ public class PowerUp {
 			tyle_board[row][column] = Tyle.POWERUP_USED;
 		}
 	}
-	
+
 	public void getPacManCollision() {
 		for (int i = 0; i < 4; i++) {
 			Ghost ghost = ghosts[i];
@@ -112,10 +117,11 @@ public class PowerUp {
 			int gCol = ghost.getX() / PacManBoard.dimension;
 			int pRow = pacman.getY() / PacManBoard.dimension;
 			int pCol = pacman.getX() / PacManBoard.dimension;
-			if (gRow == pRow && gCol == pCol && ghost.getState() != Ghost.State.DEFAULT && ghost.getState() != Ghost.State.HEAD_HOME) {
-				
+			if (gRow == pRow && gCol == pCol && ghost.getState() != Ghost.State.DEFAULT
+					&& ghost.getState() != Ghost.State.HEAD_HOME) {
+
 				PacManBoard.totalScore += state.score;
-				
+
 				decrementGhosts();
 				ghost.setTargetingState(TargetingState.GO_HOME);
 				ghost.updateState(Ghost.State.HEAD_HOME);
@@ -126,18 +132,19 @@ public class PowerUp {
 			}
 		}
 	}
-	
+
 	private void setBlackTemporarily(Ghost ghost, int seconds) {
-		ghost.changeVisibility(Visibility.NOT_VISIBLE);
 		pacman.changeVisibility(PacMan.Visibility.NOT_VISIBLE);
+		Image gImage = ghost.getImage();
+		ghost.changeImage(null, state.image);
 		PacManBoard.frame.repaint();
 		for (int j = 0; j < seconds * 60; j++) {
 			PacManBoard.sleep();
 		}
-		ghost.changeVisibility(Visibility.VISIBLE);
+		ghost.changeImage(null, gImage);
 		pacman.changeVisibility(PacMan.Visibility.VISIBLE);
 	}
-	
+
 	private void setGhostTargetingStates(TargetingState targeting_state) {
 		for (int i = 0; i < 4; i++) {
 			Ghost ghost = ghosts[i];
@@ -146,7 +153,7 @@ public class PowerUp {
 			ghost.setTargetingState(targeting_state);
 		}
 	}
-	
+
 	private void setGhostStates(Ghost.State state) {
 		for (int i = 0; i < 4; i++) {
 			Ghost ghost = ghosts[i];
@@ -158,7 +165,7 @@ public class PowerUp {
 			ghost.setState(state);
 		}
 	}
-	
+
 	public void getPowerUpLocations() {
 		int boardRows = tyle_board.length;
 		int boardColumns = tyle_board[0].length;
@@ -185,11 +192,11 @@ public class PowerUp {
 			}
 		}
 	}
-	
+
 	public void decrementGhosts() {
 		ghosts_remaining--;
 	}
-	
+
 	public void resetGhostCount() {
 		ghosts_remaining = 4;
 	}

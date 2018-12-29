@@ -152,7 +152,7 @@ public class CharacterEventHandler {
 			}
 			pacman.setState(PacMan.State.DEAD);
 			
-			for (int i = 0; i < 55; i++) {
+			for (int i = 0; i < 33; i++) {
 				pacman.updateImage();
 				PacManBoard.frame.repaint();
 				PacManBoard.sleep();

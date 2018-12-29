@@ -172,7 +172,7 @@ public class PacMan {
 					character = Toolkit.getDefaultToolkit().getImage(name.filename_prefix + filename_appendix[0][0]);
 			}
 		} else {
-			character = spriteAnimator.generateSpriteAnimation(5, 11, dyingSpriteSheet, pcBoard);
+			character = spriteAnimator.generateSpriteAnimation(3, 11, dyingSpriteSheet, pcBoard);
 		}
 	}
 
