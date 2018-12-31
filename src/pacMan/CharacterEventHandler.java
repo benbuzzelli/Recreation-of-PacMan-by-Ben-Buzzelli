@@ -169,7 +169,7 @@ public class CharacterEventHandler {
 		if (ghost.checkCollision(power_up, pacman)) {
 			global_dot_counter = true;
 			global_dots_captured = 0;
-			
+			PacManBoard.lives--;
 			for (int i = 0; i < 30; i++) {
 				PacManBoard.sleep();
 			}
