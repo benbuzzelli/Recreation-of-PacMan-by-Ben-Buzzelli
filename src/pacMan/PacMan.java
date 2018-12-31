@@ -56,6 +56,7 @@ public class PacMan {
 	private int curSpeed = 0;
 	private int start_count = 0;
 	private int speed_percent = 80;
+	private int frames_stalled = 0;
 		
 	public PacMan(Tyle[][] tyle_board) {
 		this.tyle_board = tyle_board;
@@ -301,4 +302,19 @@ public class PacMan {
 		this.state = state;
 	}
 
+	public int getFramesStalled() {
+		return frames_stalled;
+	}
+	
+	public void changeFramesStalled(int num) {
+		frames_stalled = num;
+	}
+	
+	public boolean isStalled(int frames_passed) {
+		double ratio = (100 - speed_percent) / 100.0;
+		if ((frames_stalled * 1.0) / frames_passed < ratio)
+			return true;
+		else
+			return false;
+	}
 }

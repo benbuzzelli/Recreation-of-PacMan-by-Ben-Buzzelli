@@ -1,6 +1,5 @@
 package pacMan;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class StartGame {
