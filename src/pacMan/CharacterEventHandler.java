@@ -27,6 +27,10 @@ public class CharacterEventHandler {
 	private boolean global_dot_counter;
 	
 	private int pacman_frames_passed = 0;
+	private int curPacMan_speed_percent = 0;
+	
+	private int[] ghost_frames_passed = {0, 0, 0, 0};
+	private int[] curGhost_speed_percent = {0, 0, 0, 0};
 	
 	private DotTimer dotTimer;
 	private GhostStateHandler ghostStateHandler;
@@ -67,7 +71,7 @@ public class CharacterEventHandler {
 	 * @throws IOException 
 	 */
 	public void postKeyPressEventHandler(int[] delta) throws IOException {
-			
+		
 		pacman_frames_passed++;
 		pacmanHandler();
 		ghostStateHandler.switchTargetState();
@@ -80,8 +84,9 @@ public class CharacterEventHandler {
 			pacman.update(delta[0], delta[1], tyle_board); //Move pacman by dx and dy along tyle_board
 		}*/
 		
-		if (pacman.isStalled(pacman_frames_passed)) {
+		if (!pacman.isStalled(pacman_frames_passed)) {
 			pacman.update(delta[0], delta[1], tyle_board); //Move pacman by dx and dy along tyle_board
+		} else {
 			pacman.changeFramesStalled(pacman.getFramesStalled() + 1);
 		}
 		
@@ -109,7 +114,11 @@ public class CharacterEventHandler {
 	
 	private void pacmanHandler() throws IOException {
 		pacman.updateImage();
-		pacman.setSpeed(tyle_board);
+		if (pacman.getSpeedPercent() != curPacMan_speed_percent) {
+			pacman_frames_passed = 0;
+			pacman.changeFramesStalled(0);
+			curPacMan_speed_percent = pacman.getSpeedPercent();
+		}
 	}
 	
 	private void ghostHandler() throws IOException {
@@ -131,16 +140,25 @@ public class CharacterEventHandler {
 		for (int i = 0; i < 4; i++) {
 			Ghost ghost = ghosts[i];
 			setGhostData(ghost);
-			
+			if (ghost.getSpeedPercent() != curGhost_speed_percent[i]) {
+				ghost_frames_passed[i] = 0;
+				ghost.changeFramesStalled(0);
+				curGhost_speed_percent[i] = ghost.getSpeedPercent();
+			}
+			curGhost_speed_percent[i] = ghost.getSpeedPercent();
+			ghost_frames_passed[i]++;
 			doCollisionEvents(ghost);
 			
-			if (isNotStalled(ghost.getSpeedPercent())) {
+			if (!ghost.isStalled(ghost_frames_passed[i])) {
 				ghost.ghostStart(global_dot_counter);
 				setDotCounterStates(ghosts);
 				if (ghost.getHomeState() == HomeState.HAS_EXITED) {
 					ghost.makeMove(pacman);
 				}
+			} else {
+				ghost.changeFramesStalled(ghost.getFramesStalled() + 1);
 			}
+				
 			doCollisionEvents(ghost);
 		}
 		

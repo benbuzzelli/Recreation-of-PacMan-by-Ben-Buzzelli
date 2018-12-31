@@ -88,8 +88,10 @@ public class PowerUp {
 			state = State.BLUE_800;
 		if (ghosts_remaining == 1)
 			state = State.BLUE_1600;
-		if (ghosts_remaining == 0)
+		if (ghosts_remaining == 0) {
+			ghosts_remaining = 4;
 			state = State.OFF;
+		}
 	}
 
 	public State getState() {

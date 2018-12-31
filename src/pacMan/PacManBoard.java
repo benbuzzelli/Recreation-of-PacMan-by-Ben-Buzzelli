@@ -37,6 +37,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	private Tyle[][] tyle_board;
 	
 	private InPlayScoreBoard inPlayScoreBoard = new InPlayScoreBoard();
+	private BetweenLevelHandler betweenLevelHandler;
 
 	private List<int[]> powerup_pos = new ArrayList<int[]>();
 
@@ -68,6 +69,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		
 		inPlayScoreBoard.drawScorePanel(g, this);
 		inPlayScoreBoard.drawScore(g, this);
+		betweenLevelHandler.drawREADY(g);
 	}
 
 	private void drawGameBoard(Graphics g) {
@@ -185,11 +187,14 @@ public class PacManBoard extends JPanel implements KeyListener {
 	public void startGame() throws IOException {
 		pacman = new PacMan(tyle_board);
 		setGhosts(tyle_board);
+		betweenLevelHandler = new BetweenLevelHandler(tyle_board, this);
 		setFrame(frame);
 		
 		CharacterEventHandler characterHandler = new CharacterEventHandler(60, pacman, ghosts, tyle_board);
 
 		characterHandler.setCharacters();
+		
+		betweenLevelHandler.flashReady();
 		
 		characterHandler.handleStart();
 

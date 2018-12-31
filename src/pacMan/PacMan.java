@@ -49,6 +49,8 @@ public class PacMan {
 	private int spawnY;
 	private int y;
 	private int x;
+	private int curRow;
+	private int curCol;
 	private final int dimension = 16;
 	private int curDeltaX = 0;
 	private int curDeltaY = 0;
@@ -63,6 +65,8 @@ public class PacMan {
 		setSpawnLocation();
 		this.x = spawnX;
 		this.y = spawnY;
+		this.curCol = x / PacManBoard.dimension;
+		this.curRow = y / PacManBoard.dimension;
 	}
 	
 	public void setSpawnLocation() {
@@ -88,33 +92,35 @@ public class PacMan {
 	}
 	
 	public void pacmanStart() {
-		if (start_count < 30) {
-			curDeltaX = 0;
-			curDeltaY = 0;
-			curSpeed = 0;
-			start_count++;
-		}
-		else {
-			curDeltaX = -1;
-			curDeltaY = 0;
-			curSpeed = 2;
-			start_count = -1;
-		}
+		curDeltaX = -1;
+		curDeltaY = 0;
+		curSpeed = 2;
+		start_count = -1;
 	}
 	
 	public void setSpeed(Tyle[][] tyle_board) {
 		if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension] == Tyle.DOT_SQUARE)
-			speed_percent = 70;
+			speed_percent = 50;
 		else
 			speed_percent = 80;
 	}
 
 	public boolean updateDots(Tyle[][] tyle_board) {
-		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT){
+		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT) {
 			tyle_board[y / dimension][x / dimension] = Tyle.BLACK_SQUARE;
+			setNewSquareSpeed(71, y / dimension, x / dimension);
 			return true;
 		}
+		setNewSquareSpeed(80, y / dimension, x / dimension);
 		return false;
+	}
+	
+	private void setNewSquareSpeed(int speed_percent, int row, int col) {
+		if (row != curRow || col != curCol) {
+			this.speed_percent = speed_percent;
+			curRow = row;
+			curCol = col;
+		}
 	}
 
 	public void teleport(Tyle type, Tyle[][] tyle_board) {
