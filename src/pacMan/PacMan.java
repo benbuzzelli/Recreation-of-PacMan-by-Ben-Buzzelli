@@ -95,6 +95,7 @@ public class PacMan {
 		curDeltaX = -1;
 		curDeltaY = 0;
 		curSpeed = 2;
+	
 		start_count = -1;
 	}
 	

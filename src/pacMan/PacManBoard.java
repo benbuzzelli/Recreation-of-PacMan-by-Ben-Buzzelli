@@ -25,6 +25,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	public static int FPS = 16;//TEMP VARIABLE!!!!!!!!!!
 	public static int TOTAL_DOTS = 0;
 	public static int totalScore = 0;
+	public static int lives = 2;
 	
 	public static Scanner in = new Scanner(System.in);
 	public static final int dimension = 16;
@@ -38,6 +39,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	
 	private InPlayScoreBoard inPlayScoreBoard = new InPlayScoreBoard();
 	private BetweenLevelHandler betweenLevelHandler;
+	private LifeAndFruitManager lifeFruitManager = new LifeAndFruitManager();
 
 	private List<int[]> powerup_pos = new ArrayList<int[]>();
 
@@ -70,6 +72,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		inPlayScoreBoard.drawScorePanel(g, this);
 		inPlayScoreBoard.drawScore(g, this);
 		betweenLevelHandler.drawREADY(g);
+		lifeFruitManager.drawLifeAndFruit(g, this);
 	}
 
 	private void drawGameBoard(Graphics g) {
@@ -182,6 +185,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		setTyleBoard();
 		setScorePanel();
 		getPowerUpLocations(board.size(), board.get(0).length());
+		lifeFruitManager.setValues();
 	}
 
 	public void startGame() throws IOException {
