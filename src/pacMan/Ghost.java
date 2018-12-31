@@ -143,6 +143,7 @@ public abstract class Ghost {
 	private int curDeltaY = 0;
 	private int speed = 2;
 	private int speed_percent = 75;
+	private int frames_stalled = 0;
 	private int start_count = 0;
 
 	// These integer arrays store the target for a ghost to reach in each targeting
@@ -687,6 +688,22 @@ public abstract class Ghost {
 	
 	public void changeVisibility(Visibility visibility) {
 		this.visibility = visibility;
+	}
+	
+	public int getFramesStalled() {
+		return frames_stalled;
+	}
+	
+	public void changeFramesStalled(int num) {
+		frames_stalled = num;
+	}
+	
+	public boolean isStalled(int frames_passed) {
+		double ratio = (100 - speed_percent) / 100.0;
+		if ((frames_stalled * 1.0) / frames_passed < ratio)
+			return true;
+		else
+			return false;
 	}
 
 }
