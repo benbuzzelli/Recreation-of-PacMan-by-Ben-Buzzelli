@@ -12,7 +12,7 @@ public class GhostStateHandler{
 	
 	public GhostStateHandler(Ghost[] ghosts) {
 		this.ghosts = ghosts;
-		this.ghostStateTimer = new GhostStateTimer();
+		this.ghostStateTimer = new GhostStateTimer(ghosts);
 	}
 	
 	public void switchTargetState() {

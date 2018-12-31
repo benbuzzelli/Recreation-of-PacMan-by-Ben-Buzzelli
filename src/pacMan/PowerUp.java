@@ -126,7 +126,6 @@ public class PowerUp {
 				ghost.setTargetingState(TargetingState.GO_HOME);
 				ghost.updateState(Ghost.State.HEAD_HOME);
 				ghost.updateDensity(0);
-				ghost.setBackTracking(true);
 
 				setBlackTemporarily(ghost, 1);
 			}

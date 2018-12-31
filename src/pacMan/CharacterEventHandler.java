@@ -26,6 +26,8 @@ public class CharacterEventHandler {
 	private int global_dots_captured = 0;
 	private boolean global_dot_counter;
 	
+	private int pacman_frames_passed = 0;
+	
 	private DotTimer dotTimer;
 	private GhostStateHandler ghostStateHandler;
 		
@@ -66,14 +68,21 @@ public class CharacterEventHandler {
 	 */
 	public void postKeyPressEventHandler(int[] delta) throws IOException {
 			
+		pacman_frames_passed++;
 		pacmanHandler();
 		ghostStateHandler.switchTargetState();
 		
 		power_up.blinkPowerUps(cycle_frame, 10);
 		power_up.powerupHandler(pacman);
 		
+		/*
 		if (isNotStalled(pacman.getSpeedPercent())) {
 			pacman.update(delta[0], delta[1], tyle_board); //Move pacman by dx and dy along tyle_board
+		}*/
+		
+		if (pacman.isStalled(pacman_frames_passed)) {
+			pacman.update(delta[0], delta[1], tyle_board); //Move pacman by dx and dy along tyle_board
+			pacman.changeFramesStalled(pacman.getFramesStalled() + 1);
 		}
 		
 		if (pacman.getDeltaX() != 0 || pacman.getDeltaY() != 0) {		
