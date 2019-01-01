@@ -44,6 +44,9 @@ public class PacMan {
 	
 	public boolean isBlueGhost;
 	
+	private int dotSoundCount = 0;
+	private boolean isPlayingSound;
+	
 	private char spawn_char = 'N';
 	private int spawnX;
 	private int spawnY;
@@ -106,13 +109,27 @@ public class PacMan {
 			speed_percent = 80;
 	}
 
-	public boolean updateDots(Tyle[][] tyle_board) {
+	public boolean updateDots(Tyle[][] tyle_board) throws IOException {
 		if (tyle_board[y / dimension][x / dimension].type == TyleType.DOT) {
 			tyle_board[y / dimension][x / dimension] = Tyle.BLACK_SQUARE;
 			setNewSquareSpeed(71, y / dimension, x / dimension);
+			if (dotSoundCount == 0) {
+				isPlayingSound = true;
+				Audio audio = new Audio();
+				audio.dotCaptureSound();
+			}
 			return true;
 		}
-		setNewSquareSpeed(80, y / dimension, x / dimension);
+		if (isPlayingSound)
+			dotSoundCount++;
+		if (dotSoundCount == 25) {
+			dotSoundCount = 0;
+			isPlayingSound = false;
+		}
+		if (state == State.DEFAULT)
+			setNewSquareSpeed(80, y / dimension, x / dimension);
+		else if (state == State.POWERED)
+			setNewSquareSpeed(90, y / dimension, x / dimension);
 		return false;
 	}
 	

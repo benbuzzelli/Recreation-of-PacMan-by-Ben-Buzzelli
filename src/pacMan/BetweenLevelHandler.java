@@ -28,7 +28,11 @@ public class BetweenLevelHandler {
 	}
 	
 	public void flashReady() {
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 60; i++) {
+			ready = false;
+			PacManBoard.sleep();
+		}
+		for (int i = 0; i < 90; i++) {
 			ready = true;
 			PacManBoard.frame.repaint();
 			PacManBoard.sleep();

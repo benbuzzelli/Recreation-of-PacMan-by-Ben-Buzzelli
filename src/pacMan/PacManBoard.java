@@ -17,6 +17,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import pacMan.PacMan.Visibility;
 import pacMan.TyleContainer.Tyle;
 
 public class PacManBoard extends JPanel implements KeyListener {
@@ -40,6 +42,8 @@ public class PacManBoard extends JPanel implements KeyListener {
 	private InPlayScoreBoard inPlayScoreBoard = new InPlayScoreBoard();
 	private BetweenLevelHandler betweenLevelHandler;
 	private LifeAndFruitManager lifeFruitManager = new LifeAndFruitManager();
+	
+	private Image blackLines = Toolkit.getDefaultToolkit().createImage("images/blackLines.png");
 
 	private List<int[]> powerup_pos = new ArrayList<int[]>();
 
@@ -74,6 +78,8 @@ public class PacManBoard extends JPanel implements KeyListener {
 		betweenLevelHandler.drawREADY(g);
 		betweenLevelHandler.drawGameOver(g);
 		lifeFruitManager.drawLifeAndFruit(g, this);
+		
+		g.drawImage(blackLines, 0, 0, dimension * board.get(0).length(), dimension * board.size(), this);
 	}
 
 	private void drawGameBoard(Graphics g) {
@@ -149,7 +155,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 				for (Tyle tyle : Tyle.values()) {
 					if (tyle.c == board.get(i).charAt(j)) {
 						tyle_board[i][j] = tyle;
-						if (board.get(i).charAt(j) == 'o' || board.get(i).charAt(j) == '@' || board.get(i).charAt(j) == 'N')
+						if (board.get(i).charAt(j) == 'o' || board.get(i).charAt(j) == '@')
 							TOTAL_DOTS++;
 					}
 				}
@@ -198,6 +204,8 @@ public class PacManBoard extends JPanel implements KeyListener {
 		CharacterEventHandler characterHandler = new CharacterEventHandler(60, pacman, ghosts, tyle_board);
 
 		characterHandler.setCharacters();
+		Audio audio = new Audio();
+		audio.startSound();
 		
 		betweenLevelHandler.flashReady();
 		

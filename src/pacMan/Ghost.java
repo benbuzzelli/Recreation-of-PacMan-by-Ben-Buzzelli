@@ -220,7 +220,7 @@ public abstract class Ghost {
 			speed = 2;
 		} else {
 			if (tyle_board[y / PacManBoard.dimension][x / PacManBoard.dimension] == Tyle.TELEPORT_PATH)
-				speed_percent = 50; // Set speed_percent to 50 when a ghost is traveling on a TELEPORT_PATH.
+				speed_percent = 40; // Set speed_percent to 50 when a ghost is traveling on a TELEPORT_PATH.
 			else
 				speed_percent = 75; // Set speed_percent to 75 when a ghost is in its Default state.
 			speed = 2;
