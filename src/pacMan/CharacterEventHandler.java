@@ -49,7 +49,6 @@ public class CharacterEventHandler {
 		this.dotTimer = new DotTimer(ghosts);
 		this.ghostStateHandler = new GhostStateHandler(ghosts);
 		dotTimer.updateTimer();
-		ghostStateHandler.ghostStateTimer.scheduleAttack();
 		this.power_up = new PowerUp(pacman, ghosts, PowerUp.State.OFF, tyle_board);
 		this.tyle_board = tyle_board;
 	}
@@ -71,7 +70,7 @@ public class CharacterEventHandler {
 	 * @throws IOException 
 	 */
 	public void postKeyPressEventHandler(int[] delta) throws IOException {
-		
+		ghostStateHandler.ghostStateTimer.scheduleAttack();
 		pacman_frames_passed++;
 		pacmanHandler();
 		ghostStateHandler.switchTargetState();
@@ -178,8 +177,16 @@ public class CharacterEventHandler {
 				ghosts[i].changeVisibility(Visibility.NOT_VISIBLE);
 			}
 			pacman.setState(PacMan.State.DEAD);
-			
+			Audio audio = new Audio();
+			audio.dieSound();
 			for (int i = 0; i < 33; i++) {
+				pacman.updateImage();
+				PacManBoard.frame.repaint();
+				PacManBoard.sleep();
+			}
+			pacman.setState(PacMan.State.DEFAULT);
+			pacman.changeVisibility(PacMan.Visibility.NOT_VISIBLE);
+			for (int i = 0; i < 50; i++) {
 				pacman.updateImage();
 				PacManBoard.frame.repaint();
 				PacManBoard.sleep();
@@ -188,6 +195,7 @@ public class CharacterEventHandler {
 			for (int i = 0; i < 4; i++) {
 				ghosts[i].changeVisibility(Visibility.VISIBLE);
 			}
+			pacman.changeVisibility(PacMan.Visibility.VISIBLE);
 			pacman.setState(PacMan.State.DEFAULT);
 			pacman.resetPacMan();
 			PacManBoard.frame.repaint();

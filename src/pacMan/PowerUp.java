@@ -2,6 +2,7 @@ package pacMan;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class PowerUp {
 		getPowerUpLocations();
 	}
 
-	public void powerupHandler(PacMan pacman) {
+	public void powerupHandler(PacMan pacman) throws IOException {
 		updateState();
 		incrementState();
 		getPowerupCollision();
@@ -69,6 +70,7 @@ public class PowerUp {
 			setGhostStates(Ghost.State.DEFAULT);
 			setGhostTargetingStates(TargetingState.ATTACK);
 			state = State.OFF;
+			pacman.state = pacman.state.DEFAULT;
 			resetGhostCount();
 			blueTimer = 0;
 			blinking = false;
@@ -112,7 +114,7 @@ public class PowerUp {
 		}
 	}
 
-	public void getPacManCollision() {
+	public void getPacManCollision() throws IOException {
 		for (int i = 0; i < 4; i++) {
 			Ghost ghost = ghosts[i];
 			int gRow = ghost.getY() / PacManBoard.dimension;
@@ -123,7 +125,8 @@ public class PowerUp {
 					&& ghost.getState() != Ghost.State.HEAD_HOME) {
 
 				PacManBoard.totalScore += state.score;
-
+				Audio audio = new Audio();
+				audio.munchSound();
 				decrementGhosts();
 				ghost.setTargetingState(TargetingState.GO_HOME);
 				ghost.updateState(Ghost.State.HEAD_HOME);

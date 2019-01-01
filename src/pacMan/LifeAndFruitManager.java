@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class LifeAndFruitManager {
 
-	private Image life = Toolkit.getDefaultToolkit().getImage("images/pacman_right.png");;
+	private Image life = Toolkit.getDefaultToolkit().getImage("images/pacman_left.png");;
 	private Image fruit;
 
 	private int lifeColumn;
