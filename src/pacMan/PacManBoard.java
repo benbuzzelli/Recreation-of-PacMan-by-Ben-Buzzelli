@@ -72,6 +72,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		inPlayScoreBoard.drawScorePanel(g, this);
 		inPlayScoreBoard.drawScore(g, this);
 		betweenLevelHandler.drawREADY(g);
+		betweenLevelHandler.drawGameOver(g);
 		lifeFruitManager.drawLifeAndFruit(g, this);
 	}
 
@@ -202,7 +203,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		
 		characterHandler.handleStart();
 
-		while (PacManBoard.TOTAL_DOTS > 0) {
+		while (TOTAL_DOTS > 0 && lives >= 0) {
 
 			characterHandler.postKeyPressEventHandler(delta);
 			frame.repaint();
@@ -210,14 +211,15 @@ public class PacManBoard extends JPanel implements KeyListener {
 			sleep();
 
 		}
-
+		if (lives < 0)
+			betweenLevelHandler.showGameOver();
 	}
 	
 	public void resetGame() throws FileNotFoundException {
 		TOTAL_DOTS = 0;
+		lives = 2;
 		totalScore = 0;
 		inPlayScoreBoard = null;
-		// frame.removeAll();
 		
 		inPlayScoreBoard = new InPlayScoreBoard();
 		setScorePanel();
