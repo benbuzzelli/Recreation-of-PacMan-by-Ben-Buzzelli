@@ -1,5 +1,6 @@
 package pacMan;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Timer;
 
 import pacMan.Ghost.DotCounterState;
@@ -17,6 +18,12 @@ public class CharacterEventHandler {
 	// *********************************************************************************//
 	private int cycle_frame = 0;
 	private final int frames_per_cycle;
+	
+	
+	private long time_at_start;
+	private long time_at_end;
+	
+	private long total_time = 0;
 
 	private PacMan pacman;
 	private Ghost[] ghosts;
@@ -70,18 +77,18 @@ public class CharacterEventHandler {
 	 * @throws IOException 
 	 */
 	public void postKeyPressEventHandler(int[] delta) throws IOException {
-		ghostStateHandler.ghostStateTimer.scheduleAttack();
+		time_at_start = (long) new Date().getTime();
+		
 		pacman_frames_passed++;
 		pacmanHandler();
-		ghostStateHandler.switchTargetState();
+		// ghostStateHandler.switchTargetState();
 		
 		power_up.blinkPowerUps(cycle_frame, 10);
 		power_up.powerupHandler(pacman);
 		
-		/*
-		if (isNotStalled(pacman.getSpeedPercent())) {
-			pacman.update(delta[0], delta[1], tyle_board); //Move pacman by dx and dy along tyle_board
-		}*/
+		if (power_up.getState() != PowerUp.State.OFF) {
+			// ghostStateHandler.ghostStateTimer.timer.
+		}
 		
 		if (!pacman.isStalled(pacman_frames_passed)) {
 			pacman.update(delta[0], delta[1], tyle_board); //Move pacman by dx and dy along tyle_board
@@ -93,7 +100,18 @@ public class CharacterEventHandler {
 			ghostHandler();
 			cycleHandler();
 		}
+		
+		PacManBoard.sleep();
+		
+		time_at_end = (long) new Date().getTime();
+		double time_diff = time_at_end - time_at_start;
+		if (time_diff > 17)
+			time_diff = 16.666;
+		total_time += (time_diff);
+		
+		ghostStateHandler.switchTargetState(total_time, power_up);
 	}
+	
 	// *********************************************************************************//
 	// *********************************************************************************//
 	// HELPER FUNCTIONS FOR postKeyPressEventHandler()
@@ -247,14 +265,6 @@ public class CharacterEventHandler {
 			pacman.pacmanStart();
 			PacManBoard.sleep();
 		}
-	}
-	
-	private boolean isNotStalled(int speed_percent) {
-		double ratio = 1 - speed_percent / 100.0;
-		int stall_frame = (int) Math.floor(1.0 / ratio);
-		if (cycle_frame % stall_frame == 0)
-			return false;
-		return true;
 	}
 	
 }

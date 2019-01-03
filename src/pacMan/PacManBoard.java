@@ -18,7 +18,6 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import pacMan.PacMan.Visibility;
 import pacMan.TyleContainer.Tyle;
 
 public class PacManBoard extends JPanel implements KeyListener {
@@ -27,7 +26,9 @@ public class PacManBoard extends JPanel implements KeyListener {
 	public static int FPS = 16;//TEMP VARIABLE!!!!!!!!!!
 	public static int TOTAL_DOTS = 0;
 	public static int totalScore = 0;
-	public static int lives = 2;
+	public static List<Integer> highscores = new ArrayList<>();
+	public static int topHighScore = 0;
+	public static int lives = 0;
 	
 	public static Scanner in = new Scanner(System.in);
 	public static final int dimension = 16;
@@ -49,6 +50,18 @@ public class PacManBoard extends JPanel implements KeyListener {
 
 	private int[] delta = {-1, 0};
 	GridLayout bigBoard = new GridLayout(2,1);
+	
+	
+	public void getScores(String file_name) throws FileNotFoundException {
+		File file = new File(file_name);
+		Scanner in = new Scanner(file);
+
+		while (in.hasNextLine()) {
+			highscores.add(Integer.parseInt(in.nextLine()));
+		}
+
+		in.close();
+	}
 	
 	public void createBoard() throws FileNotFoundException {
 		getBoard("textBoard.txt");
@@ -75,6 +88,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		
 		inPlayScoreBoard.drawScorePanel(g, this);
 		inPlayScoreBoard.drawScore(g, this);
+		inPlayScoreBoard.drawHighScore(g, this);
 		betweenLevelHandler.drawREADY(g);
 		betweenLevelHandler.drawGameOver(g);
 		lifeFruitManager.drawLifeAndFruit(g, this);
@@ -139,7 +153,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		frame.setSize(xDimension, yDimension);
 		frame.getContentPane().add(this);
 		frame.setLocationRelativeTo(null);
-		frame.setBackground(Color.LIGHT_GRAY);
+		frame.setBackground(Color.BLUE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -196,6 +210,10 @@ public class PacManBoard extends JPanel implements KeyListener {
 	}
 
 	public void startGame() throws IOException {
+		getScores("high_score.txt");
+		if (highscores.size() > 0)
+			topHighScore = highscores.get(highscores.size() - 1);
+		
 		pacman = new PacMan(tyle_board);
 		setGhosts(tyle_board);
 		betweenLevelHandler = new BetweenLevelHandler(tyle_board, this);
@@ -215,23 +233,22 @@ public class PacManBoard extends JPanel implements KeyListener {
 
 			characterHandler.postKeyPressEventHandler(delta);
 			frame.repaint();
-			
-			sleep();
-
 		}
-		if (lives < 0)
-			betweenLevelHandler.showGameOver();
+		if (lives < 0) {
+			betweenLevelHandler.doGameOver(inPlayScoreBoard);
+			topHighScore = highscores.get(highscores.size() - 1);
+		}
+		else
+			betweenLevelHandler.flashPanelAfterWin();
 	}
 	
 	public void resetGame() throws FileNotFoundException {
 		TOTAL_DOTS = 0;
-		lives = 2;
-		totalScore = 0;
 		inPlayScoreBoard = null;
 		
 		inPlayScoreBoard = new InPlayScoreBoard();
-		setScorePanel();
 		setTyleBoard();
+		setScorePanel();
 	}
 	
 	public static void sleep() {
