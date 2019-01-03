@@ -1,8 +1,11 @@
 package pacMan;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 
 import pacMan.TyleContainer.Tyle;
 
@@ -27,6 +30,16 @@ public class BetweenLevelHandler {
 		this.pacman_board = pacman_board;
 	}
 	
+	public void flashPanelAfterWin() {
+		for (int i = 0; i < 120; i++) {
+			if ((i / 20) % 2 == 0)
+				PacManBoard.frame.setBackground(Color.WHITE);
+			else
+				PacManBoard.frame.setBackground(Color.BLUE);
+			PacManBoard.sleep();
+		}
+	}
+	
 	public void flashReady() {
 		for (int i = 0; i < 60; i++) {
 			ready = false;
@@ -47,13 +60,17 @@ public class BetweenLevelHandler {
 		}
 	}
 	
-	public void showGameOver() {
+	public void doGameOver(InPlayScoreBoard inPlayScoreBoard) throws FileNotFoundException, UnsupportedEncodingException {
+		inPlayScoreBoard.updateHighScores();
+		
 		for (int i = 0; i < 90; i++) {
 			game_over = true;
 			PacManBoard.frame.repaint();
 			PacManBoard.sleep();
 		}
 		game_over = false;
+		PacManBoard.totalScore = 0;
+		PacManBoard.lives = 0;
 	}
 	
 	public void drawREADY(Graphics g) {

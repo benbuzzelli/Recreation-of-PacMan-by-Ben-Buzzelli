@@ -3,15 +3,16 @@ package pacMan;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import pacMan.DotTimer.FreeGhost;
 import pacMan.Ghost.TargetingState;
 
 public class GhostStateTimer {
-	private Timer timer = new Timer();
+	public Timer timer = new Timer();
 	private TargetingState targetingState = TargetingState.SCATTER;
 	
 	private int scatter_sec = 7;
 	private int attack_sec = 20;
+	
+	public boolean hasStarted;
 	
 	private Ghost[] ghosts;
 	
@@ -24,6 +25,7 @@ public class GhostStateTimer {
 	}
 	
 	public void scheduleAttack() {
+		hasStarted = true;
 		timer = new Timer();
 		timer.schedule(new SetToAttack(), scatter_sec * 1000);
 	}

@@ -5,7 +5,10 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class InPlayScoreBoard {
@@ -40,6 +43,35 @@ public class InPlayScoreBoard {
 						PacManBoard.dimension, pacman_board);
 			}
 		}
+	}
+	
+	public void drawHighScore(Graphics g, PacManBoard pacman_board) {
+		if (PacManBoard.topHighScore < PacManBoard.totalScore)
+			PacManBoard.topHighScore = PacManBoard.totalScore;
+		String score = Integer.toString(PacManBoard.topHighScore);
+		int length = score.length();
+		
+		if (PacManBoard.topHighScore > 0)
+		for (int i = 0; i < length; i++) {
+			int index = score.charAt((length-1) - i) - '0';
+			Image piece = Toolkit.getDefaultToolkit().getImage(number[index].filename);
+			g.drawImage(piece, PacManBoard.dimension * 18 - PacManBoard.dimension * i, PacManBoard.dimension*2, PacManBoard.dimension,
+					PacManBoard.dimension, pacman_board);
+		}
+	}
+	
+	public void updateHighScores() throws FileNotFoundException, UnsupportedEncodingException {
+		PacManBoard.highscores.add(PacManBoard.totalScore);
+		Collections.sort(PacManBoard.highscores);
+		
+		if (PacManBoard.highscores.size() == 11)
+			PacManBoard.highscores.remove(0);
+		
+		PrintWriter writer = new PrintWriter("high_score.txt", "UTF-8");
+		for (int i = PacManBoard.highscores.size() - 1; i >= 0; i--) {
+			writer.println(PacManBoard.highscores.get(i));
+		}
+		writer.close();
 	}
 
 	public void drawScore(Graphics g, PacManBoard pacman_board) {

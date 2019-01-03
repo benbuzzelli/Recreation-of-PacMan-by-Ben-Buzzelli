@@ -108,7 +108,9 @@ public class PowerUp {
 			setStateToBlue();
 			PacManBoard.TOTAL_DOTS--;
 			PacManBoard.totalScore += 10;
-			System.out.println("<-----------Powerup collision detected------------>");
+			for (int i = 0; i < 4; i++) {
+				ghosts[i].setBackTracking(true);
+			}
 			pacman.state = PacMan.State.POWERED;
 			tyle_board[row][column] = Tyle.POWERUP_USED;
 		}

@@ -278,27 +278,25 @@ public abstract class Ghost {
 	// Method for making a ghost's move and updating its position based on its
 	// target square.
 	public void makeMove(PacMan pacman) {
-		if (x % PacManBoard.dimension == 0 && y % PacManBoard.dimension == 0) {
-			int[] target = new int[2];
+		int[] target = new int[2];
+		
+		updateAttackTarget(pacman); // Update this each time makeMove is called
+		updateScatterTarget(); // Update this each time makeMove is called
 
-			updateAttackTarget(pacman); // Update this each time makeMove is called
-			updateScatterTarget(); // Update this each time makeMove is called
-
-			if (targeting_state == TargetingState.ATTACK) {
-				target = attack_target; // Set the ghost's target equal to attack target when in its attack state.
-			} else if (targeting_state == TargetingState.SCATTER) {
-				target = scatter_target; // Set the ghost's target equal to its appropriate state.
-			} else if (targeting_state == TargetingState.GO_HOME) {
-				goHome(); // Call goHome method during a Ghost's GO_HOME state because there are more
-								// specific instructions.
-				updateX(curDeltaX); // Update x and y for each move.
-				updateY(curDeltaY);
-				return; // Return to skip the next instructions.
-			}
-
-			getGhostMove(target[0], target[1]); // Call getGhostMove which will set curDeltaX and curDeltaY to their
-												// appropriate values.
+		if (targeting_state == TargetingState.ATTACK) {
+			target = attack_target; // Set the ghost's target equal to attack target when in its attack state.
+		} else if (targeting_state == TargetingState.SCATTER) {
+			target = scatter_target; // Set the ghost's target equal to its appropriate state.
+		} else if (targeting_state == TargetingState.GO_HOME) {
+			goHome(); // Call goHome method during a Ghost's GO_HOME state because there are more
+							// specific instructions.
+			updateX(curDeltaX); // Update x and y for each move.
+			updateY(curDeltaY);
+			return; // Return to skip the next instructions.
 		}
+
+		getGhostMove(target[0], target[1]); // Call getGhostMove which will set curDeltaX and curDeltaY to their
+												// appropriate values.
 
 		updateX(getDeltaX()); // Update x and y for each move.
 		updateY(getDeltaY());
@@ -321,11 +319,17 @@ public abstract class Ghost {
 		}
 		
 		int[] chosen_move = new int[2];
-		if (targeting_state != TargetingState.FRIGHTENED)
-			chosen_move = findClosestMove(targetX, targetY, move); // Call findClosestMove to get the desired move.
-		else {
-			chosen_move = findLongestMove(targetX, targetY, move);
+		
+		if (move.size() != 0) {
+			if (targeting_state != TargetingState.FRIGHTENED)
+				chosen_move = findClosestMove(targetX, targetY, move); // Call findClosestMove to get the desired move.
+			else
+				chosen_move = findLongestMove(targetX, targetY, move);
+		} else {
+			chosen_move[0] = curDeltaX;
+			chosen_move[1] = curDeltaY;
 		}
+		
 		updateSpeed(speed);
 
 		updateDeltaX(chosen_move[0]); // Update each delta with the new move.
@@ -393,13 +397,20 @@ public abstract class Ghost {
 	}
 
 	public boolean isValid(int dx, int dy) {
+		
+		if (back_tracking && ((dx != 0 && dx * -1 == curDeltaX) || (dy != 0 && dy * -1 == curDeltaY))) {
+			back_tracking = false;
+			return true;
+		}
 		// Check if a new dx and dy will cause a ghost to turn around and return false
 		// if this is the case.
 		// Do not return false however, if back_tracking is true.
-		if (back_tracking == false && (dx != 0 && dx == getDeltaX() * -1) || (dy != 0 && dy == getDeltaY() * -1)) {
+		if (!back_tracking && (dx != 0 && dx == getDeltaX() * -1) || (dy != 0 && dy == getDeltaY() * -1)) {
 			return false;
 		}
-		back_tracking = false;
+		
+		if (x % PacManBoard.dimension != 0 || y % PacManBoard.dimension != 0)
+			return false;
 
 		// Get the new column and row using the input delta values.
 		int column = getX() / PacManBoard.dimension + dx, row = getY() / PacManBoard.dimension + dy;
