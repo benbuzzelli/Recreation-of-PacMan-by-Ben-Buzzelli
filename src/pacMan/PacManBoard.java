@@ -28,7 +28,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	public static int totalScore = 0;
 	public static List<Integer> highscores = new ArrayList<>();
 	public static int topHighScore = 0;
-	public static int lives = 0;
+	public static int lives = 3;
 	
 	public static Scanner in = new Scanner(System.in);
 	public static final int dimension = 16;
