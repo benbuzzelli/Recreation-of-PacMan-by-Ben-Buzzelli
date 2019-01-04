@@ -36,5 +36,17 @@ public class HighScoreDB {
 		for(Map<String,AttributeValue> maps:scanResult.getItems()){
 			System.out.println(maps);
 		}
+		
 		}
+	
+	//Will get epoch time and add to table
+	public void addTableEntry(int score, String name){
+		long epochTime = System.currentTimeMillis();
+		HighScoreEntry entry = new HighScoreEntry(score, name, epochTime);
+	}
+	
+	public List<HighScoreEntry> getTopHundred(){
+		return null;
+	}
+	
 }
