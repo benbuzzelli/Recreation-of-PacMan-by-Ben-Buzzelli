@@ -178,8 +178,6 @@ public class CharacterEventHandler {
 				
 			doCollisionEvents(ghost);
 		}
-		
-		
 	}
 	
 	private void doCollisionEvents(Ghost ghost) throws IOException {
