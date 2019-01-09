@@ -28,6 +28,7 @@ public class GhostStateHandler{
 					if (time_passed >= 7 && !attacking) {
 						temp_time = total_time;
 						ghost.setTargetingState(TargetingState.ATTACK);
+						ghost.setBackTracking(true);
 						if (i == 3) {
 							attacking = true;
 							scattering = false;
@@ -35,6 +36,7 @@ public class GhostStateHandler{
 					} else if (time_passed >= 20 && !scattering) {
 						temp_time = total_time;
 						ghost.setTargetingState(TargetingState.SCATTER);
+						ghost.setBackTracking(true);
 						if (i == 3) {
 							attacking = false;
 							scattering = true;
