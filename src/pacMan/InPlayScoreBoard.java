@@ -51,12 +51,13 @@ public class InPlayScoreBoard {
 		String score = Integer.toString(PacManBoard.topHighScore);
 		int length = score.length();
 		
-		if (PacManBoard.topHighScore > 0)
-		for (int i = 0; i < length; i++) {
-			int index = score.charAt((length-1) - i) - '0';
-			Image piece = Toolkit.getDefaultToolkit().getImage(number[index].filename);
-			g.drawImage(piece, PacManBoard.dimension * 18 - PacManBoard.dimension * i, PacManBoard.dimension*2, PacManBoard.dimension,
+		if (PacManBoard.topHighScore > 0) {
+			for (int i = 0; i < length; i++) {
+				int index = score.charAt((length-1) - i) - '0';
+				Image piece = Toolkit.getDefaultToolkit().getImage(number[index].filename);
+				g.drawImage(piece, PacManBoard.dimension * 18 - PacManBoard.dimension * i, PacManBoard.dimension*2, PacManBoard.dimension,
 					PacManBoard.dimension, pacman_board);
+			}
 		}
 	}
 	
@@ -64,13 +65,22 @@ public class InPlayScoreBoard {
 		PacManBoard.highscores.add(PacManBoard.totalScore);
 		Collections.sort(PacManBoard.highscores);
 		
-		if (PacManBoard.highscores.size() == 11)
+		
+		while (PacManBoard.highscores.size() > 10) {
 			PacManBoard.highscores.remove(0);
+		}
 		
 		PrintWriter writer = new PrintWriter("high_score.txt", "UTF-8");
 		for (int i = PacManBoard.highscores.size() - 1; i >= 0; i--) {
 			writer.println(PacManBoard.highscores.get(i));
 		}
+		
+		PacManBoard.topHighScore = PacManBoard.highscores.get(PacManBoard.highscores.size() - 1);
+		
+		while (PacManBoard.highscores.size() > 0) {
+			PacManBoard.highscores.remove(0);
+		}
+		
 		writer.close();
 	}
 

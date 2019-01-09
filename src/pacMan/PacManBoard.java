@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,13 +23,12 @@ import pacMan.TyleContainer.Tyle;
 
 public class PacManBoard extends JPanel implements KeyListener {
 
-
 	public static int FPS = 16;//TEMP VARIABLE!!!!!!!!!!
 	public static int TOTAL_DOTS = 0;
 	public static int totalScore = 0;
 	public static List<Integer> highscores = new ArrayList<>();
 	public static int topHighScore = 0;
-	public static int lives = 3;
+	public static int lives = 2;
 	
 	public static Scanner in = new Scanner(System.in);
 	public static final int dimension = 16;
@@ -59,7 +59,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		while (in.hasNextLine()) {
 			highscores.add(Integer.parseInt(in.nextLine()));
 		}
-
+		Collections.sort(PacManBoard.highscores);
 		in.close();
 	}
 	
@@ -85,6 +85,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 		drawPacMan(g);
 		drawGhosts(g);
 		drawGameBorder(g);
+		drawGhostTargets(g);
 		
 		inPlayScoreBoard.drawScorePanel(g, this);
 		inPlayScoreBoard.drawScore(g, this);
@@ -145,6 +146,21 @@ public class PacManBoard extends JPanel implements KeyListener {
 			g.drawImage(ghost.getImage(), ghost.getX() + xplus, ghost.getY() + yplus, width / 2, height / 2, this);
 		}
 	}
+	
+	private void drawGhostTargets(Graphics g) {
+		for (int i = 0; i < ghosts.length; i++) {
+			Ghost ghost = ghosts[i];
+			ghost.updateTargetSquare();
+			if (ghost.getVisibility() == Ghost.Visibility.NOT_VISIBLE)
+				continue;
+			int width = ghost.targetSquare.getWidth(this);
+			int height = ghost.targetSquare.getHeight(this);
+			int xplus = -(width / 4 - dimension) / 4;
+			int yplus = -(height / 4 - dimension) / 4;
+
+			g.drawImage(ghost.targetSquare, ghost.updateTargetSquare()[0] + xplus, ghost.updateTargetSquare()[1] + yplus, width / 4, height / 4, this);
+		}
+	}
 
 	private void setFrame(JFrame frame) {
 		int xDimension = board.get(0).length() * dimension;
@@ -199,6 +215,10 @@ public class PacManBoard extends JPanel implements KeyListener {
 		ghosts[1] = new Pinky(tyleBoard);
 		ghosts[2] = new Inky(tyleBoard);
 		ghosts[3] = new Clyde(tyleBoard);
+		
+		for (int i = 0; i < 4; i++) {
+			ghosts[i].setBlinky(ghosts[0]);
+		}
 	}
 	
 	public void gameStartUp() throws FileNotFoundException {
@@ -212,7 +232,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	public void startGame() throws IOException {
 		getScores("high_score.txt");
 		if (highscores.size() > 0)
-			topHighScore = highscores.get(highscores.size() - 1);
+			topHighScore = highscores.get(highscores.size()-1);
 		
 		pacman = new PacMan(tyle_board);
 		setGhosts(tyle_board);
@@ -234,10 +254,8 @@ public class PacManBoard extends JPanel implements KeyListener {
 			characterHandler.postKeyPressEventHandler(delta);
 			frame.repaint();
 		}
-		if (lives < 0) {
+		if (lives < 0)
 			betweenLevelHandler.doGameOver(inPlayScoreBoard);
-			topHighScore = highscores.get(highscores.size() - 1);
-		}
 		else
 			betweenLevelHandler.flashPanelAfterWin();
 	}
@@ -265,8 +283,6 @@ public class PacManBoard extends JPanel implements KeyListener {
 	}
 
 	public void keyPressed(KeyEvent event) {
-		delta[0] = 0;
-		delta[1] = 0;
 
 		if (event.getKeyCode() == KeyEvent.VK_UP) {
 			delta[0] = 0;

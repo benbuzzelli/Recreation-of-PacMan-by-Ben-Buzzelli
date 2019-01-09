@@ -70,7 +70,7 @@ public class BetweenLevelHandler {
 		}
 		game_over = false;
 		PacManBoard.totalScore = 0;
-		PacManBoard.lives = 3;
+		PacManBoard.lives = 2;
 	}
 	
 	public void drawREADY(Graphics g) {

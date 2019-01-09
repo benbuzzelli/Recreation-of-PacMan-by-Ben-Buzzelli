@@ -57,6 +57,8 @@ public class PacMan {
 	private final int dimension = 16;
 	private int curDeltaX = 0;
 	private int curDeltaY = 0;
+	private int newDX = 0;
+	private int newDY = 0;
 	private int speed = 2;
 	private int curSpeed = 0;
 	private int start_count = 0;
@@ -202,6 +204,11 @@ public class PacMan {
 	}
 
 	public void update(int dx, int dy, Tyle[][] tyle_board) {
+		if (dx != newDX || dy != newDY) {
+			newDX = dx;
+			newDY = dy;
+		}
+		
 		if (x % dimension == 0 && y % dimension == 0) {
 			if (getIfValid(dx, dy, tyle_board)) {
 				curDeltaX = dx;
