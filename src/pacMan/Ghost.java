@@ -5,9 +5,6 @@ import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 
-import pacMan.Ghost.DotCounterState;
-import pacMan.Ghost.HomeState;
-import pacMan.PacMan.Visibility;
 import pacMan.TyleContainer.Tyle;
 import pacMan.TyleContainer.TyleType;
 
@@ -113,6 +110,9 @@ public abstract class Ghost {
 	private State state;
 	private GhostName ghost;
 	private Visibility visibility = Visibility.VISIBLE;
+	
+	public Ghost blinky;
+	
 	// *********************************************************************************//
 	// *********************************************************************************//
 	// STATE DETERMINATION VARIABLES
@@ -274,12 +274,15 @@ public abstract class Ghost {
 		updateX(getDeltaX());
 		updateY(getDeltaY());
 	}
+	
+	public void setBlinky(Ghost blinky) {
+		this.blinky = blinky;
+	}
 
 	// Method for making a ghost's move and updating its position based on its
 	// target square.
 	public void makeMove(PacMan pacman) {
 		int[] target = new int[2];
-		
 		updateAttackTarget(pacman); // Update this each time makeMove is called
 		updateScatterTarget(); // Update this each time makeMove is called
 
@@ -293,6 +296,11 @@ public abstract class Ghost {
 			updateX(curDeltaX); // Update x and y for each move.
 			updateY(curDeltaY);
 			return; // Return to skip the next instructions.
+		}
+		
+		if (targeting_state == TargetingState.FRIGHTENED) {
+			attack_target[0] = pacman.getX();
+			attack_target[1] = pacman.getY();
 		}
 
 		getGhostMove(target[0], target[1]); // Call getGhostMove which will set curDeltaX and curDeltaY to their
@@ -715,6 +723,49 @@ public abstract class Ghost {
 			return true;
 		else
 			return false;
+	}
+	
+	// *********************************************************************************//
+	// *********************************************************************************//
+	// TARGET SQUARE DRAWER STUFF ---> ONLY TEMPORARY
+	// *********************************************************************************//
+	
+	public Image targetSquare;
+	
+	public int[] updateTargetSquare() {
+		int[] target = new int[2];
+		
+		switch (ghost) {
+		case BLINKY:
+			targetSquare = Toolkit.getDefaultToolkit().getImage("images/blinky_target.png");
+			break;
+		case PINKY:
+			targetSquare = Toolkit.getDefaultToolkit().getImage("images/pinky_target.png");
+			break;
+		case INKY:
+			targetSquare = Toolkit.getDefaultToolkit().getImage("images/inky_target.png");
+			break;
+		case CLYDE:
+			targetSquare = Toolkit.getDefaultToolkit().getImage("images/clyde_target.png");
+			break;
+		}
+		
+		switch (targeting_state) {
+		case ATTACK:
+			target = attack_target;
+			break;
+		case SCATTER:
+			target = scatter_target;
+			break;
+		case GO_HOME:
+			target = scatter_target;
+			break;
+		case FRIGHTENED:
+			target = attack_target;
+			break;
+		}
+				
+		return target;
 	}
 
 }

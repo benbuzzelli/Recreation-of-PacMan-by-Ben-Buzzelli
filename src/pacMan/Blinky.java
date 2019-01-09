@@ -6,7 +6,7 @@ import pacMan.TyleContainer.Tyle;
 public class Blinky extends Ghost {
 
 	public Blinky(Tyle[][] tyle_board) {
-		super(GhostName.BLINKY, State.DEFAULT, tyle_board, TargetingState.ATTACK, HomeState.IS_EXITING, 0);
+		super(GhostName.BLINKY, State.DEFAULT, tyle_board, TargetingState.SCATTER, HomeState.IS_EXITING, 0);
 	}
 	
 	public void updateAttackTarget(PacMan pacman) {
@@ -14,7 +14,7 @@ public class Blinky extends Ghost {
 	}
 	
 	public void updateScatterTarget() {
-		setScatterTarget(new int[] {432, -32});
+		setScatterTarget(new int[] {432, 0});
 	}
 	
 	public void setSpawnLocation() {

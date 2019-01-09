@@ -6,7 +6,7 @@ import pacMan.TyleContainer.Tyle;
 public class Inky extends Ghost {
 	
 	public Inky(Tyle[][] tyle_board) {
-		super(GhostName.INKY, State.DEFAULT, tyle_board, TargetingState.ATTACK, HomeState.IS_HOME, 30);
+		super(GhostName.INKY, State.DEFAULT, tyle_board, TargetingState.SCATTER, HomeState.IS_HOME, 30);
 	}
 	
 	public void setSpawnLocation() {
@@ -34,7 +34,20 @@ public class Inky extends Ghost {
 	}
 	
 	public void updateAttackTarget(PacMan pacman) {
-		setAttackTarget(new int[] {pacman.getX(), pacman.getY()});
+		int addX = (pacman.getDeltaX() * 2) * PacManBoard.dimension;
+		int addY = (pacman.getDeltaY() * 2) * PacManBoard.dimension; 
+		
+		if (pacman.getDeltaY() == -1) {
+			addX = -2 * PacManBoard.dimension;
+		}
+		
+		int tempX = pacman.getX() + addX;
+		int tempY = pacman.getY() + addY;
+		
+		addX = 2 * (tempX - blinky.getX());
+		addY = 2 * (tempY - blinky.getY());
+		
+		setAttackTarget(new int[] {blinky.getX() + addX, blinky.getY() + addY});
 	}
 	
 	public void updateScatterTarget() {

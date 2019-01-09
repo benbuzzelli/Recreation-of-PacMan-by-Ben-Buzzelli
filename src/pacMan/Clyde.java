@@ -6,7 +6,7 @@ import pacMan.TyleContainer.Tyle;
 public class Clyde extends Ghost {
 
 	public Clyde(Tyle[][] tyle_board) {
-		super(GhostName.CLYDE, State.DEFAULT, tyle_board, TargetingState.ATTACK, HomeState.IS_HOME, 60);
+		super(GhostName.CLYDE, State.DEFAULT, tyle_board, TargetingState.SCATTER, HomeState.IS_HOME, 60);
 	}
 	
 	public void setSpawnLocation() {
@@ -34,7 +34,14 @@ public class Clyde extends Ghost {
 	}
 	
 	public void updateAttackTarget(PacMan pacman) {
-		setAttackTarget(new int[] {pacman.getX(), pacman.getY()});
+		double disX = pacman.getX() - getX();
+		double disY = pacman.getY() - getY();
+		double distance = Math.sqrt(disX * disX + disY * disY) / PacManBoard.dimension;
+		
+		if (distance > 8)
+			setAttackTarget(new int[] {pacman.getX(), pacman.getY()});
+		else
+			setAttackTarget(new int[] {32, 544});
 	}
 	
 	public void updateScatterTarget() {
