@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import pacMan.TyleContainer.Tyle;
@@ -12,10 +13,12 @@ import pacMan.TyleContainer.Tyle;
 public class BetweenLevelHandler {
 	
 	private PacManBoard pacman_board;
+	private ScoreBoard scoreBoard;
 	private Image READY = Toolkit.getDefaultToolkit().getImage("images_between_levels/READY!.png");
 	private Image GAME_OVER = Toolkit.getDefaultToolkit().getImage("images_between_levels/GAME_OVER.png");
 	
 	private boolean game_over;
+	private boolean show_score_board;
 	private boolean ready;
 	private int readyX;
 	private int readyY;
@@ -24,7 +27,7 @@ public class BetweenLevelHandler {
 	
 	private Tyle[][] tyleBoard;
 	
-	public BetweenLevelHandler(Tyle[][] tyleBoard, PacManBoard pacman_board) {
+	public BetweenLevelHandler(Tyle[][] tyleBoard, PacManBoard pacman_board) throws IOException {
 		this.tyleBoard = tyleBoard;
 		setReadyLocation();
 		this.pacman_board = pacman_board;
@@ -60,18 +63,29 @@ public class BetweenLevelHandler {
 		}
 	}
 	
-	public void doGameOver(InPlayScoreBoard inPlayScoreBoard) throws FileNotFoundException, UnsupportedEncodingException {
+	public void doGameOver(InPlayScoreBoard inPlayScoreBoard) throws IOException {
 		inPlayScoreBoard.updateHighScores();
-		
+		scoreBoard = new ScoreBoard(pacman_board);
 		for (int i = 0; i < 90; i++) {
 			game_over = true;
 			PacManBoard.frame.repaint();
 			PacManBoard.sleep();
 		}
+		show_score_board = true;
+		for (int i = 0; i < 600; i++) {
+			PacManBoard.frame.repaint();
+			PacManBoard.sleep();
+		}
+		show_score_board = false;
 		game_over = false;
 		PacManBoard.totalScore = 0;
-		PacManBoard.lives = 2;
+		PacManBoard.lives = 0;
 	}
+	
+	public void drawScoreBoard(Graphics g) throws IOException {
+		if (show_score_board)
+			scoreBoard.drawScoreBoard(g);
+	} 
 	
 	public void drawREADY(Graphics g) {
 		int width = READY.getWidth(pacman_board);

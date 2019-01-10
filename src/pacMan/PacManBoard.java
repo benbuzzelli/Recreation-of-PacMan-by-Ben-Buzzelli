@@ -28,7 +28,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	public static int totalScore = 0;
 	public static List<Integer> highscores = new ArrayList<>();
 	public static int topHighScore = 0;
-	public static int lives = 2;
+	public static int lives = 0;
 	
 	public static Scanner in = new Scanner(System.in);
 	public static final int dimension = 16;
@@ -40,7 +40,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 	private final ArrayList<String> board = new ArrayList<>();
 	private Tyle[][] tyle_board;
 	
-	private InPlayScoreBoard inPlayScoreBoard = new InPlayScoreBoard();
+	private InPlayScoreBoard inPlayScoreBoard;
 	private BetweenLevelHandler betweenLevelHandler;
 	private LifeAndFruitManager lifeFruitManager = new LifeAndFruitManager();
 	
@@ -87,11 +87,17 @@ public class PacManBoard extends JPanel implements KeyListener {
 		drawGameBorder(g);
 		drawGhostTargets(g);
 		
-		inPlayScoreBoard.drawScorePanel(g, this);
-		inPlayScoreBoard.drawScore(g, this);
-		inPlayScoreBoard.drawHighScore(g, this);
+		inPlayScoreBoard.drawScorePanel(g);
+		inPlayScoreBoard.drawScore(g);
+		inPlayScoreBoard.drawHighScore(g);
 		betweenLevelHandler.drawREADY(g);
 		betweenLevelHandler.drawGameOver(g);
+		try {
+			betweenLevelHandler.drawScoreBoard(g);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		lifeFruitManager.drawLifeAndFruit(g, this);
 		
 		g.drawImage(blackLines, 0, 0, dimension * board.get(0).length(), dimension * board.size(), this);
@@ -221,9 +227,10 @@ public class PacManBoard extends JPanel implements KeyListener {
 		}
 	}
 	
-	public void gameStartUp() throws FileNotFoundException {
+	public void gameStartUp() throws IOException {
 		createBoard();
 		setTyleBoard();
+		inPlayScoreBoard = new InPlayScoreBoard(this);
 		setScorePanel();
 		getPowerUpLocations(board.size(), board.get(0).length());
 		lifeFruitManager.setValues();
@@ -260,11 +267,11 @@ public class PacManBoard extends JPanel implements KeyListener {
 			betweenLevelHandler.flashPanelAfterWin();
 	}
 	
-	public void resetGame() throws FileNotFoundException {
+	public void resetGame() throws IOException {
 		TOTAL_DOTS = 0;
 		inPlayScoreBoard = null;
 		
-		inPlayScoreBoard = new InPlayScoreBoard();
+		inPlayScoreBoard = new InPlayScoreBoard(this);
 		setTyleBoard();
 		setScorePanel();
 	}

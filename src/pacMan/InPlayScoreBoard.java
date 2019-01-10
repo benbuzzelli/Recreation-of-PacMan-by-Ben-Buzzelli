@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -13,39 +14,49 @@ import java.util.Scanner;
 
 public class InPlayScoreBoard {
 
-	public enum Number {
-		ZERO("images_score_panel/0.png", 0), ONE("images_score_panel/1.png", 1), TWO("images_score_panel/2.png", 2),
-		THREE("images_score_panel/3.png", 3), FOUR("images_score_panel/4.png", 4), FIVE("images_score_panel/5.png", 5),
-		SIX("images_score_panel/6.png", 6), SEVEN("images_score_panel/7.png", 7), EIGHT("images_score_panel/8.png", 8),
-		NINE("images_score_panel/9.png", 9);
-
-		String filename;
-		int num;
-
-		Number(String filename, int num) {
-			this.filename = filename;
-			this.num = num;
-		}
-	}
-
+	private AlphaNumericChars alphaNumChars;
+	private PacManBoard pacman_board;
 	private final ArrayList<String> char_panel = new ArrayList<>();
 	private ScoreTyleContainer.ScoreTyle[][] score_panel;
-	private Number[] number = { Number.ZERO, Number.ONE, Number.TWO, Number.THREE, Number.FOUR, Number.FIVE, Number.SIX,
-			Number.SEVEN, Number.EIGHT, Number.NINE };
+	
+	public InPlayScoreBoard(PacManBoard pacman_board) throws IOException {
+		alphaNumChars = new AlphaNumericChars(pacman_board);
+	}
 
-	public void drawScorePanel(Graphics g, PacManBoard pacman_board) {
+	public void drawScorePanel(Graphics g) {
 		int rows = char_panel.size();
 		int columns = char_panel.get(0).length();
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
-				Image piece = Toolkit.getDefaultToolkit().getImage(score_panel[i][j].filename);
-				g.drawImage(piece, PacManBoard.dimension * j, PacManBoard.dimension * i, PacManBoard.dimension,
+				Image piece;
+				int posX = PacManBoard.dimension * j;
+				int posY = PacManBoard.dimension * i;
+				int index = charIndexHelper(char_panel.get(i).charAt(j));
+				if (index < 0)
+					piece = Toolkit.getDefaultToolkit().getImage("images/black_square.png");
+				else
+					piece = alphaNumChars.alphaNumImages[0][index];
+				
+				if (i == 1)
+					posY -= PacManBoard.dimension / 4;
+				
+				g.drawImage(piece, posX, posY, PacManBoard.dimension,
 						PacManBoard.dimension, pacman_board);
 			}
 		}
 	}
 	
-	public void drawHighScore(Graphics g, PacManBoard pacman_board) {
+	private int charIndexHelper(char character) {
+		int index = character - 'A';
+		if (index >= 0 && index < 26)
+			index += 10;
+		else
+			index += 17;
+		
+		return index;
+	}
+	
+	public void drawHighScore(Graphics g) {
 		if (PacManBoard.topHighScore < PacManBoard.totalScore)
 			PacManBoard.topHighScore = PacManBoard.totalScore;
 		String score = Integer.toString(PacManBoard.topHighScore);
@@ -54,7 +65,7 @@ public class InPlayScoreBoard {
 		if (PacManBoard.topHighScore > 0) {
 			for (int i = 0; i < length; i++) {
 				int index = score.charAt((length-1) - i) - '0';
-				Image piece = Toolkit.getDefaultToolkit().getImage(number[index].filename);
+				Image piece = alphaNumChars.alphaNumImages[0][index];
 				g.drawImage(piece, PacManBoard.dimension * 18 - PacManBoard.dimension * i, PacManBoard.dimension*2, PacManBoard.dimension,
 					PacManBoard.dimension, pacman_board);
 			}
@@ -84,12 +95,12 @@ public class InPlayScoreBoard {
 		writer.close();
 	}
 
-	public void drawScore(Graphics g, PacManBoard pacman_board) {
+	public void drawScore(Graphics g) {
 		String score = Integer.toString(PacManBoard.totalScore);
 		int length = score.length();
 		
 		if (PacManBoard.totalScore == 0) {
-			Image zero = Toolkit.getDefaultToolkit().getImage(number[0].filename);
+			Image zero = alphaNumChars.alphaNumImages[0][0];
 			g.drawImage(zero, PacManBoard.dimension * 8, PacManBoard.dimension*2, PacManBoard.dimension,
 					PacManBoard.dimension, pacman_board);
 			g.drawImage(zero, PacManBoard.dimension * 8 - PacManBoard.dimension, PacManBoard.dimension*2, PacManBoard.dimension,
@@ -99,7 +110,7 @@ public class InPlayScoreBoard {
 		
 		for (int i = 0; i < length; i++) {
 			int index = score.charAt((length-1) - i) - '0';
-			Image piece = Toolkit.getDefaultToolkit().getImage(number[index].filename);
+			Image piece = alphaNumChars.alphaNumImages[0][index];
 			g.drawImage(piece, PacManBoard.dimension * 8 - PacManBoard.dimension * i, PacManBoard.dimension*2, PacManBoard.dimension,
 					PacManBoard.dimension, pacman_board);
 		}
