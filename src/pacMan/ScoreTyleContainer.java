@@ -23,7 +23,6 @@ public class ScoreTyleContainer {
 			this.filename = filename;
 			this.c = c;
 		}
-
-		
 	}
+	
 }

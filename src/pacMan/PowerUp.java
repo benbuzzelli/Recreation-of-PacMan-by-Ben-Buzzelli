@@ -107,7 +107,7 @@ public class PowerUp {
 		if (tyle_board[row][column].type == TyleType.POWERUP) {
 			setStateToBlue();
 			PacManBoard.TOTAL_DOTS--;
-			PacManBoard.totalScore += 10;
+			PacManBoard.totalScore += 50;
 			for (int i = 0; i < 4; i++) {
 				ghosts[i].setBackTracking(true);
 			}
