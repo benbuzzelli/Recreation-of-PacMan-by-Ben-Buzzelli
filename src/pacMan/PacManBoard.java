@@ -164,7 +164,7 @@ public class PacManBoard extends JPanel implements KeyListener {
 			int xplus = -(width / 4 - dimension) / 4;
 			int yplus = -(height / 4 - dimension) / 4;
 
-			g.drawImage(ghost.targetSquare, ghost.updateTargetSquare()[0] + xplus, ghost.updateTargetSquare()[1] + yplus, width / 4, height / 4, this);
+//			g.drawImage(ghost.targetSquare, ghost.updateTargetSquare()[0] + xplus, ghost.updateTargetSquare()[1] + yplus, width / 4, height / 4, this);
 		}
 	}
 
